@@ -404,12 +404,18 @@
 
         function calculateInterest(contact) {
             if (!contact.aperturas || contact.aperturas === 0) return 'cold';
-            const lastOpen = contact.ultima ? parseDate(contact.ultima) : null;
             const now = new Date();
+            const lastOpen = contact.ultima ? parseDate(contact.ultima) : null;
+            const sentDate = contact.enviado ? parseDate(contact.enviado) : null;
             const daysSinceOpen = lastOpen ? Math.floor((now - lastOpen) / (1000 * 60 * 60 * 24)) : 999;
+            const daysSinceSent = sentDate ? Math.floor((now - sentDate) / (1000 * 60 * 60 * 24)) : 0;
 
-            if (contact.aperturas >= 3 && daysSinceOpen <= 3) return 'hot';
-            if (contact.aperturas >= 1 && daysSinceOpen <= 7) return 'warm';
+            // CALIENTE: +8 aperturas O apertura reciente (<7 días) si enviado hace >15 días
+            if (contact.aperturas >= 8) return 'hot';
+            if (daysSinceOpen <= 7 && daysSinceSent > 15) return 'hot';
+
+            // TIBIO: 1-7 aperturas con actividad reciente
+            if (contact.aperturas >= 1 && daysSinceOpen <= 14) return 'warm';
             return 'cold';
         }
 

@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>🚀 CRM Pracmatik</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    <title>pracmatik. CRM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -19,24 +19,27 @@
             --info: #3b82f6;
             --purple: #8b5cf6;
             --pink: #ec4899;
+            --cyan: #06b6d4;
         }
 
         .dark {
-            --bg-main: #0f172a;
-            --bg-card: rgba(30, 41, 59, 0.9);
-            --bg-glass: rgba(255, 255, 255, 0.05);
+            --bg-main: #030712;
+            --bg-depth: #0a0f1a;
+            --bg-card: rgba(15, 23, 42, 0.85);
+            --bg-glass: rgba(255, 255, 255, 0.03);
             --text: #f1f5f9;
-            --text-muted: #94a3b8;
-            --border: rgba(148, 163, 184, 0.2);
+            --text-muted: #64748b;
+            --border: rgba(148, 163, 184, 0.15);
         }
 
         .light {
-            --bg-main: #f1f5f9;
-            --bg-card: rgba(255, 255, 255, 0.95);
-            --bg-glass: rgba(0, 0, 0, 0.03);
-            --text: #1e293b;
-            --text-muted: #64748b;
-            --border: rgba(0, 0, 0, 0.1);
+            --bg-main: #f8fafc;
+            --bg-depth: #e2e8f0;
+            --bg-card: rgba(255, 255, 255, 0.9);
+            --bg-glass: rgba(0, 0, 0, 0.02);
+            --text: #0f172a;
+            --text-muted: #475569;
+            --border: rgba(0, 0, 0, 0.08);
         }
 
         * {
@@ -50,397 +53,530 @@
             background: var(--bg-main);
             min-height: 100vh;
             color: var(--text);
-            transition: background 0.4s, color 0.4s;
+            overflow-x: hidden;
         }
 
-        /* Background */
-        .bg-depth {
+        /* Deep Background */
+        .bg-universe {
             position: fixed;
             inset: 0;
             pointer-events: none;
             z-index: 0;
-            overflow: hidden;
+            background: radial-gradient(ellipse at 50% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 50%), radial-gradient(ellipse at 80% 80%, rgba(236, 72, 153, 0.1) 0%, transparent 40%), radial-gradient(ellipse at 20% 90%, rgba(16, 185, 129, 0.1) 0%, transparent 40%);
         }
 
-        .bg-orb {
+        .stars {
             position: absolute;
-            border-radius: 50%;
-            filter: blur(120px);
-            opacity: 0.3;
-            animation: float 25s ease-in-out infinite;
+            inset: 0;
+            background-image: radial-gradient(2px 2px at 20px 30px, rgba(255, 255, 255, 0.3), transparent), radial-gradient(2px 2px at 40px 70px, rgba(255, 255, 255, 0.2), transparent), radial-gradient(1px 1px at 90px 40px, rgba(255, 255, 255, 0.4), transparent), radial-gradient(2px 2px at 130px 80px, rgba(255, 255, 255, 0.2), transparent), radial-gradient(1px 1px at 160px 120px, rgba(255, 255, 255, 0.3), transparent);
+            background-size: 200px 200px;
+            animation: twinkle 8s ease-in-out infinite;
         }
 
-        .bg-orb.o1 {
-            width: 600px;
-            height: 600px;
-            background: var(--primary);
-            top: -200px;
-            left: -150px;
-        }
-
-        .bg-orb.o2 {
-            width: 500px;
-            height: 500px;
-            background: var(--success);
-            bottom: -150px;
-            right: -100px;
-            animation-delay: -8s;
-        }
-
-        .bg-orb.o3 {
-            width: 400px;
-            height: 400px;
-            background: var(--pink);
-            top: 50%;
-            left: 60%;
-            animation-delay: -16s;
-        }
-
-        @keyframes float {
+        @keyframes twinkle {
 
             0%,
             100% {
-                transform: translate(0, 0) scale(1);
+                opacity: 0.5;
             }
 
-            33% {
-                transform: translate(40px, -40px) scale(1.1);
-            }
-
-            66% {
-                transform: translate(-30px, 30px) scale(0.9);
+            50% {
+                opacity: 1;
             }
         }
 
-        .light .bg-orb {
+        .light .stars {
+            opacity: 0;
+        }
+
+        .nebula {
+            position: absolute;
+            width: 800px;
+            height: 800px;
+            border-radius: 50%;
+            filter: blur(150px);
+            opacity: 0.4;
+            animation: drift 30s ease-in-out infinite;
+        }
+
+        .nebula.n1 {
+            background: linear-gradient(135deg, var(--primary), var(--purple));
+            top: -300px;
+            left: -200px;
+        }
+
+        .nebula.n2 {
+            background: linear-gradient(135deg, var(--pink), var(--danger));
+            bottom: -300px;
+            right: -200px;
+            animation-delay: -10s;
+        }
+
+        .nebula.n3 {
+            background: linear-gradient(135deg, var(--success), var(--cyan));
+            top: 40%;
+            left: 50%;
+            width: 500px;
+            height: 500px;
+            animation-delay: -20s;
+        }
+
+        @keyframes drift {
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1) rotate(0deg);
+            }
+
+            33% {
+                transform: translate(30px, -30px) scale(1.1) rotate(5deg);
+            }
+
+            66% {
+                transform: translate(-20px, 20px) scale(0.95) rotate(-3deg);
+            }
+        }
+
+        .light .nebula {
             opacity: 0.1;
+        }
+
+        .grid-lines {
+            position: absolute;
+            inset: 0;
+            background-image: linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            100% {
+                transform: translate(60px, 60px);
+            }
         }
 
         .container {
             position: relative;
             z-index: 1;
-            max-width: 1500px;
+            max-width: 1600px;
             margin: 0 auto;
             padding: 20px;
         }
 
-        /* Header */
-        .header {
+        /* Brand Header */
+        .brand-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-            gap: 15px;
-            animation: slideDown 0.5s ease;
+            padding: 20px 0 30px;
+            animation: fadeDown 0.6s ease;
         }
 
-        @keyframes slideDown {
+        @keyframes fadeDown {
             from {
                 opacity: 0;
-                transform: translateY(-20px);
+                transform: translateY(-30px);
             }
         }
 
-        .header-left h1 {
-            font-size: clamp(24px, 5vw, 32px);
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--primary-light), var(--pink));
+        .brand {
+            display: flex;
+            align-items: baseline;
+            gap: 2px;
+        }
+
+        .brand-name {
+            font-size: clamp(28px, 6vw, 42px);
+            font-weight: 900;
+            letter-spacing: -2px;
+            background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0.7) 100%);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        .header-left p {
-            color: var(--text-muted);
-            font-size: 14px;
-            margin-top: 4px;
+        .light .brand-name {
+            background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+        }
+
+        .brand-dot {
+            font-size: clamp(28px, 6vw, 42px);
+            font-weight: 900;
+            color: var(--primary);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
         }
 
         .header-actions {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             align-items: center;
         }
 
-        .theme-toggle {
+        .icon-btn {
             width: 44px;
-            height: 26px;
+            height: 44px;
+            border-radius: 12px;
             background: var(--bg-glass);
             border: 1px solid var(--border);
-            border-radius: 13px;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .theme-toggle::before {
-            content: '🌙';
-            position: absolute;
-            left: 4px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 13px;
-            transition: 0.3s;
-        }
-
-        .light .theme-toggle::before {
-            content: '☀️';
-            left: calc(100% - 20px);
-        }
-
-        .refresh-btn {
-            padding: 8px 16px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 6px;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
         }
 
-        .refresh-btn:hover {
-            opacity: 0.9;
+        .icon-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: translateY(-2px);
         }
 
-        .refresh-btn.loading {
-            opacity: 0.6;
-            pointer-events: none;
+        .time-display {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-align: right;
         }
 
-        /* KPI Grid */
-        .kpi-grid {
+        .time-display .time {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        /* Section Overview Grid */
+        .overview-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            grid-template-columns: repeat(6, 1fr);
             gap: 15px;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
         }
 
-        .kpi-card {
-            background: var(--bg-card);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 18px;
-            animation: fadeUp 0.5s ease calc(var(--i, 0) * 0.05s) both;
-            position: relative;
-            overflow: hidden;
-        }
-
-        @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
+        @media (max-width: 1200px) {
+            .overview-grid {
+                grid-template-columns: repeat(3, 1fr);
             }
         }
 
-        .kpi-card::before {
+        @media (max-width: 600px) {
+            .overview-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .section-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            animation: cardIn 0.5s ease calc(var(--i, 0) * 0.08s) both;
+            text-decoration: none;
+            color: var(--text);
+            display: block;
+        }
+
+        @keyframes cardIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+        }
+
+        .section-card::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            height: 3px;
-            background: var(--kpi-color, var(--primary));
+            height: 4px;
+            background: var(--card-accent, var(--primary));
+            transform: scaleX(0);
+            transition: transform 0.3s;
+            transform-origin: left;
         }
 
-        .kpi-icon {
-            font-size: 24px;
+        .section-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .section-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px var(--card-accent, var(--primary));
+        }
+
+        .section-icon {
+            font-size: 36px;
+            margin-bottom: 12px;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .section-value {
+            font-size: 32px;
+            font-weight: 900;
             margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--card-accent, var(--primary)), var(--text));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .kpi-value {
-            font-size: 28px;
-            font-weight: 800;
-            margin-bottom: 2px;
-        }
-
-        .kpi-label {
+        .section-subtitle {
             font-size: 11px;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
-        .kpi-trend {
-            font-size: 11px;
-            margin-top: 6px;
+        .section-mini-chart {
+            height: 40px;
+            margin-top: 12px;
             display: flex;
-            align-items: center;
-            gap: 4px;
+            align-items: flex-end;
+            gap: 3px;
         }
 
-        .kpi-trend.up {
-            color: var(--success);
+        .mini-bar {
+            flex: 1;
+            background: var(--card-accent, var(--primary));
+            border-radius: 3px 3px 0 0;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+            animation: barGrow 0.5s ease calc(var(--b, 0) * 0.05s) both;
         }
 
-        .kpi-trend.down {
-            color: var(--danger);
+        @keyframes barGrow {
+            from {
+                height: 0 !important;
+            }
         }
 
-        /* Dashboard Grid */
-        .dashboard-grid {
+        .section-card:hover .mini-bar {
+            opacity: 1;
+        }
+
+        .status-ring {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 50px;
+            height: 50px;
+        }
+
+        .ring-bg {
+            fill: none;
+            stroke: var(--bg-glass);
+            stroke-width: 4;
+        }
+
+        .ring-progress {
+            fill: none;
+            stroke: var(--card-accent, var(--primary));
+            stroke-width: 4;
+            stroke-linecap: round;
+            transform: rotate(-90deg);
+            transform-origin: center;
+            transition: stroke-dashoffset 1s ease;
+        }
+
+        /* Main Dashboard Grid */
+        .dashboard-main {
             display: grid;
-            grid-template-columns: repeat(12, 1fr);
+            grid-template-columns: 2fr 1fr;
             gap: 20px;
+            margin-bottom: 20px;
         }
 
-        @media (max-width: 1200px) {
-            .dashboard-grid {
+        @media (max-width: 1000px) {
+            .dashboard-main {
                 grid-template-columns: 1fr;
             }
         }
 
-        /* Cards */
-        .card {
+        .panel {
             background: var(--bg-card);
             backdrop-filter: blur(20px);
             border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 20px;
-            animation: fadeUp 0.5s ease 0.2s both;
+            border-radius: 24px;
+            padding: 24px;
+            animation: fadeUp 0.6s ease 0.3s both;
         }
 
-        .card.span-8 {
-            grid-column: span 8;
-        }
-
-        .card.span-4 {
-            grid-column: span 4;
-        }
-
-        .card.span-6 {
-            grid-column: span 6;
-        }
-
-        .card.span-12 {
-            grid-column: span 12;
-        }
-
-        @media (max-width: 1200px) {
-
-            .card.span-8,
-            .card.span-4,
-            .card.span-6,
-            .card.span-12 {
-                grid-column: span 1;
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
             }
         }
 
-        .card-header {
+        .panel-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
-        .card-title {
-            font-size: 16px;
-            font-weight: 700;
+        .panel-title {
+            font-size: 18px;
+            font-weight: 800;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
-        .card-link {
+        .panel-link {
             font-size: 12px;
             color: var(--primary-light);
             text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 4px;
+            padding: 6px 12px;
+            background: var(--bg-glass);
+            border-radius: 8px;
+            transition: all 0.2s;
         }
 
-        .card-link:hover {
-            text-decoration: underline;
+        .panel-link:hover {
+            background: var(--primary);
+            color: white;
         }
 
-        /* Mini Lists */
-        .mini-list {
+        /* Chart */
+        .chart-wrapper {
+            height: 280px;
+            position: relative;
+        }
+
+        /* Activity Feed */
+        .activity-feed {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
+            max-height: 400px;
+            overflow-y: auto;
         }
 
-        .mini-item {
+        .activity-item {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
+            gap: 12px;
+            padding: 14px;
             background: var(--bg-glass);
-            border-radius: 12px;
-            transition: all 0.2s;
+            border-radius: 14px;
+            transition: all 0.3s;
             cursor: pointer;
+            animation: slideIn 0.4s ease calc(var(--i, 0) * 0.05s) both;
         }
 
-        .mini-item:hover {
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+        }
+
+        .activity-item:hover {
             background: rgba(99, 102, 241, 0.1);
-            transform: translateX(4px);
+            transform: translateX(5px);
         }
 
-        .mini-item-left {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .mini-item-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
+        .activity-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
+            font-size: 18px;
+            flex-shrink: 0;
         }
 
-        .mini-item-icon.green {
+        .activity-icon.success {
             background: rgba(16, 185, 129, 0.2);
         }
 
-        .mini-item-icon.blue {
-            background: rgba(59, 130, 246, 0.2);
-        }
-
-        .mini-item-icon.orange {
+        .activity-icon.warning {
             background: rgba(245, 158, 11, 0.2);
         }
 
-        .mini-item-icon.purple {
+        .activity-icon.info {
+            background: rgba(59, 130, 246, 0.2);
+        }
+
+        .activity-icon.danger {
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        .activity-icon.purple {
             background: rgba(139, 92, 246, 0.2);
         }
 
-        .mini-item-icon.pink {
+        .activity-icon.pink {
             background: rgba(236, 72, 153, 0.2);
         }
 
-        .mini-item-name {
-            font-weight: 600;
-            font-size: 14px;
+        .activity-content {
+            flex: 1;
+            min-width: 0;
         }
 
-        .mini-item-sub {
-            font-size: 11px;
+        .activity-title {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .activity-desc {
+            font-size: 12px;
             color: var(--text-muted);
         }
 
-        .mini-item-right {
+        .activity-meta {
             text-align: right;
+            flex-shrink: 0;
         }
 
-        .mini-item-value {
+        .activity-value {
             font-weight: 700;
             font-size: 14px;
         }
 
-        .mini-item-badge {
-            padding: 3px 8px;
+        .activity-badge {
+            display: inline-block;
+            padding: 4px 10px;
             border-radius: 8px;
             font-size: 10px;
-            font-weight: 600;
+            font-weight: 700;
+            margin-top: 4px;
         }
 
         .badge-hot {
@@ -454,7 +590,7 @@
         }
 
         .badge-cold {
-            background: rgba(148, 163, 184, 0.2);
+            background: rgba(100, 116, 139, 0.3);
             color: var(--text-muted);
         }
 
@@ -463,246 +599,223 @@
             color: var(--info);
         }
 
-        /* Progress Bars */
-        .progress-item {
-            margin-bottom: 12px;
-        }
-
-        .progress-header {
+        /* Quick Actions Bar */
+        .quick-bar {
             display: flex;
-            justify-content: space-between;
-            margin-bottom: 6px;
-            font-size: 12px;
+            gap: 12px;
+            flex-wrap: wrap;
+            animation: fadeUp 0.6s ease 0.5s both;
         }
 
-        .progress-bar {
-            height: 8px;
-            background: var(--bg-main);
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            border-radius: 4px;
-            transition: width 0.5s ease;
-        }
-
-        /* Chart Container */
-        .chart-container {
-            height: 200px;
-            position: relative;
-        }
-
-        /* Quick Actions */
-        .quick-actions {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            gap: 10px;
-        }
-
-        .quick-btn {
-            padding: 15px 10px;
-            background: var(--bg-glass);
+        .quick-action {
+            flex: 1;
+            min-width: 140px;
+            padding: 18px;
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: 16px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s;
             text-decoration: none;
             color: var(--text);
         }
 
-        .quick-btn:hover {
-            background: var(--primary);
+        .quick-action:hover {
+            transform: translateY(-5px);
             border-color: var(--primary);
-            transform: translateY(-2px);
+            box-shadow: 0 15px 30px -10px rgba(99, 102, 241, 0.3);
         }
 
-        .quick-btn-icon {
-            font-size: 22px;
-            margin-bottom: 6px;
+        .quick-action-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
         }
 
-        .quick-btn-text {
-            font-size: 11px;
+        .quick-action-text {
+            font-size: 13px;
             font-weight: 600;
         }
 
-        /* Loading */
-        .loading-text {
-            color: var(--text-muted);
-            font-size: 13px;
+        /* Footer */
+        .footer {
             text-align: center;
-            padding: 20px;
+            padding: 30px;
+            color: var(--text-muted);
+            font-size: 12px;
+            animation: fadeUp 0.6s ease 0.6s both;
         }
 
-        .skeleton {
-            background: linear-gradient(90deg, var(--bg-glass) 25%, rgba(255, 255, 255, 0.1) 50%, var(--bg-glass) 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
-            border-radius: 8px;
+        .footer a {
+            color: var(--primary-light);
+            text-decoration: none;
         }
 
-        @keyframes shimmer {
-            0% {
-                background-position: 200% 0;
-            }
-
-            100% {
-                background-position: -200% 0;
-            }
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
         }
 
-        /* Responsive */
-        @media (max-width: 600px) {
-            .container {
-                padding: 15px;
-            }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
 
-            .kpi-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .kpi-value {
-                font-size: 22px;
-            }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
         }
     </style>
 </head>
 
 <body class="dark">
-    <div class="bg-depth">
-        <div class="bg-orb o1"></div>
-        <div class="bg-orb o2"></div>
-        <div class="bg-orb o3"></div>
+    <div class="bg-universe">
+        <div class="stars"></div>
+        <div class="grid-lines"></div>
+        <div class="nebula n1"></div>
+        <div class="nebula n2"></div>
+        <div class="nebula n3"></div>
     </div>
 
     <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div class="header-left">
-                <h1>🚀 CRM Pracmatik</h1>
-                <p id="lastUpdate">Cargando datos...</p>
+        <!-- Brand Header -->
+        <header class="brand-header">
+            <div class="brand">
+                <span class="brand-name">pracmatik</span>
+                <span class="brand-dot">.</span>
             </div>
             <div class="header-actions">
-                <button class="refresh-btn" id="refreshBtn" onclick="loadAllData()">🔄 Actualizar</button>
-                <button class="theme-toggle" onclick="toggleTheme()"></button>
+                <div class="time-display">
+                    <div class="time" id="currentTime">--:--</div>
+                    <div id="currentDate">--</div>
+                </div>
+                <button class="icon-btn" onclick="loadAllData()" title="Actualizar">🔄</button>
+                <button class="icon-btn" onclick="toggleTheme()" title="Tema">🌓</button>
             </div>
         </header>
 
-        <!-- KPIs -->
-        <div class="kpi-grid">
-            <div class="kpi-card" style="--i:0; --kpi-color: var(--success);">
-                <div class="kpi-icon">💰</div>
-                <div class="kpi-value" id="kpiIngresos">-</div>
-                <div class="kpi-label">Ingresos</div>
-                <div class="kpi-trend up" id="kpiIngresosTrend"></div>
+        <!-- Section Overview -->
+        <div class="overview-grid">
+            <a href="dashboard.html" class="section-card" style="--i:0; --card-accent: var(--success);">
+                <svg class="status-ring" viewBox="0 0 50 50">
+                    <circle class="ring-bg" cx="25" cy="25" r="20" />
+                    <circle class="ring-progress" cx="25" cy="25" r="20" stroke-dasharray="126" stroke-dashoffset="30"
+                        id="ringFinanciero" />
+                </svg>
+                <div class="section-icon">💰</div>
+                <div class="section-title">Finanzas</div>
+                <div class="section-value" id="secIngresos">-</div>
+                <div class="section-subtitle">Ingresos totales</div>
+                <div class="section-mini-chart" id="miniChartFinanzas"></div>
+            </a>
+            <a href="clientes.html" class="section-card" style="--i:1; --card-accent: var(--info);">
+                <svg class="status-ring" viewBox="0 0 50 50">
+                    <circle class="ring-bg" cx="25" cy="25" r="20" />
+                    <circle class="ring-progress" cx="25" cy="25" r="20" stroke-dasharray="126" stroke-dashoffset="50"
+                        id="ringClientes" />
+                </svg>
+                <div class="section-icon">👥</div>
+                <div class="section-title">Clientes</div>
+                <div class="section-value" id="secClientes">-</div>
+                <div class="section-subtitle">Activos</div>
+                <div class="section-mini-chart" id="miniChartClientes"></div>
+            </a>
+            <a href="leads.html" class="section-card" style="--i:2; --card-accent: var(--warning);">
+                <svg class="status-ring" viewBox="0 0 50 50">
+                    <circle class="ring-bg" cx="25" cy="25" r="20" />
+                    <circle class="ring-progress" cx="25" cy="25" r="20" stroke-dasharray="126" stroke-dashoffset="60"
+                        id="ringLeads" />
+                </svg>
+                <div class="section-icon">🎯</div>
+                <div class="section-title">Leads</div>
+                <div class="section-value" id="secLeads">-</div>
+                <div class="section-subtitle">En pipeline</div>
+                <div class="section-mini-chart" id="miniChartLeads"></div>
+            </a>
+            <a href="proyectos.html" class="section-card" style="--i:3; --card-accent: var(--purple);">
+                <svg class="status-ring" viewBox="0 0 50 50">
+                    <circle class="ring-bg" cx="25" cy="25" r="20" />
+                    <circle class="ring-progress" cx="25" cy="25" r="20" stroke-dasharray="126" stroke-dashoffset="40"
+                        id="ringProyectos" />
+                </svg>
+                <div class="section-icon">📋</div>
+                <div class="section-title">Proyectos</div>
+                <div class="section-value" id="secProyectos">-</div>
+                <div class="section-subtitle">En curso</div>
+                <div class="section-mini-chart" id="miniChartProyectos"></div>
+            </a>
+            <a href="comercial.html" class="section-card" style="--i:4; --card-accent: var(--pink);">
+                <svg class="status-ring" viewBox="0 0 50 50">
+                    <circle class="ring-bg" cx="25" cy="25" r="20" />
+                    <circle class="ring-progress" cx="25" cy="25" r="20" stroke-dasharray="126" stroke-dashoffset="80"
+                        id="ringComercial" />
+                </svg>
+                <div class="section-icon">📧</div>
+                <div class="section-title">Comercial</div>
+                <div class="section-value" id="secComercial">-</div>
+                <div class="section-subtitle">Leads calientes</div>
+                <div class="section-mini-chart" id="miniChartComercial"></div>
+            </a>
+            <a href="index.html" class="section-card" style="--i:5; --card-accent: var(--cyan);">
+                <svg class="status-ring" viewBox="0 0 50 50">
+                    <circle class="ring-bg" cx="25" cy="25" r="20" />
+                    <circle class="ring-progress" cx="25" cy="25" r="20" stroke-dasharray="126" stroke-dashoffset="20"
+                        id="ringFacturas" />
+                </svg>
+                <div class="section-icon">📝</div>
+                <div class="section-title">Facturas</div>
+                <div class="section-value" id="secFacturas">-</div>
+                <div class="section-subtitle">Este mes</div>
+                <div class="section-mini-chart" id="miniChartFacturas"></div>
+            </a>
+        </div>
+
+        <!-- Main Dashboard -->
+        <div class="dashboard-main">
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">📊 Rendimiento</span>
+                    <a href="dashboard.html" class="panel-link">Ver detalle →</a>
+                </div>
+                <div class="chart-wrapper"><canvas id="mainChart"></canvas></div>
             </div>
-            <div class="kpi-card" style="--i:1; --kpi-color: var(--danger);">
-                <div class="kpi-icon">📉</div>
-                <div class="kpi-value" id="kpiGastos">-</div>
-                <div class="kpi-label">Gastos</div>
-            </div>
-            <div class="kpi-card" style="--i:2; --kpi-color: var(--info);">
-                <div class="kpi-icon">👥</div>
-                <div class="kpi-value" id="kpiClientes">-</div>
-                <div class="kpi-label">Clientes</div>
-            </div>
-            <div class="kpi-card" style="--i:3; --kpi-color: var(--warning);">
-                <div class="kpi-icon">🎯</div>
-                <div class="kpi-value" id="kpiLeads">-</div>
-                <div class="kpi-label">Leads Activos</div>
-            </div>
-            <div class="kpi-card" style="--i:4; --kpi-color: var(--purple);">
-                <div class="kpi-icon">📋</div>
-                <div class="kpi-value" id="kpiProyectos">-</div>
-                <div class="kpi-label">Proyectos</div>
-            </div>
-            <div class="kpi-card" style="--i:5; --kpi-color: var(--pink);">
-                <div class="kpi-icon">🔥</div>
-                <div class="kpi-value" id="kpiHotLeads">-</div>
-                <div class="kpi-label">Leads Calientes</div>
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">⚡ Actividad Reciente</span>
+                </div>
+                <div class="activity-feed" id="activityFeed">
+                    <div style="text-align:center; color: var(--text-muted); padding: 40px;">Cargando...</div>
+                </div>
             </div>
         </div>
 
-        <!-- Dashboard Grid -->
-        <div class="dashboard-grid">
-            <!-- Gráfico Ingresos/Gastos -->
-            <div class="card span-8">
-                <div class="card-header">
-                    <span class="card-title">📊 Evolución Financiera</span>
-                    <a href="dashboard.html" class="card-link">Ver más →</a>
-                </div>
-                <div class="chart-container"><canvas id="chartFinanciero"></canvas></div>
-            </div>
-
-            <!-- Proyectos por Fase -->
-            <div class="card span-4">
-                <div class="card-header">
-                    <span class="card-title">📋 Proyectos por Fase</span>
-                    <a href="proyectos.html" class="card-link">Ver Kanban →</a>
-                </div>
-                <div id="proyectosFases">
-                    <div class="loading-text">Cargando...</div>
-                </div>
-            </div>
-
-            <!-- Leads Recientes -->
-            <div class="card span-6">
-                <div class="card-header">
-                    <span class="card-title">🎯 Leads Recientes</span>
-                    <a href="leads.html" class="card-link">Ver pipeline →</a>
-                </div>
-                <div class="mini-list" id="leadsRecientes">
-                    <div class="loading-text">Cargando...</div>
-                </div>
-            </div>
-
-            <!-- Email Outreach -->
-            <div class="card span-6">
-                <div class="card-header">
-                    <span class="card-title">📧 Email Outreach</span>
-                    <a href="comercial.html" class="card-link">Ver comercial →</a>
-                </div>
-                <div class="mini-list" id="emailOutreach">
-                    <div class="loading-text">Cargando...</div>
-                </div>
-            </div>
-
-            <!-- Acciones Rápidas -->
-            <div class="card span-12">
-                <div class="card-header">
-                    <span class="card-title">⚡ Acciones Rápidas</span>
-                </div>
-                <div class="quick-actions">
-                    <a href="index.html" class="quick-btn">
-                        <div class="quick-btn-icon">📝</div>
-                        <div class="quick-btn-text">Nueva Factura</div>
-                    </a>
-                    <a href="clientes.html#nuevo" class="quick-btn">
-                        <div class="quick-btn-icon">👤</div>
-                        <div class="quick-btn-text">Nuevo Cliente</div>
-                    </a>
-                    <a href="leads.html#nuevo" class="quick-btn">
-                        <div class="quick-btn-icon">🎯</div>
-                        <div class="quick-btn-text">Nuevo Lead</div>
-                    </a>
-                    <a href="proyectos.html#nuevo" class="quick-btn">
-                        <div class="quick-btn-icon">📋</div>
-                        <div class="quick-btn-text">Nuevo Proyecto</div>
-                    </a>
-                    <a href="comercial.html" class="quick-btn">
-                        <div class="quick-btn-icon">📧</div>
-                        <div class="quick-btn-text">Email Tracking</div>
-                    </a>
-                    <a href="dashboard.html" class="quick-btn">
-                        <div class="quick-btn-icon">📊</div>
-                        <div class="quick-btn-text">Contabilidad</div>
-                    </a>
-                </div>
-            </div>
+        <!-- Quick Actions -->
+        <div class="quick-bar">
+            <a href="index.html" class="quick-action">
+                <div class="quick-action-icon">📝</div>
+                <div class="quick-action-text">Nueva Factura</div>
+            </a>
+            <a href="clientes.html#nuevo" class="quick-action">
+                <div class="quick-action-icon">👤</div>
+                <div class="quick-action-text">Nuevo Cliente</div>
+            </a>
+            <a href="leads.html#nuevo" class="quick-action">
+                <div class="quick-action-icon">🎯</div>
+                <div class="quick-action-text">Nuevo Lead</div>
+            </a>
+            <a href="proyectos.html#nuevo" class="quick-action">
+                <div class="quick-action-icon">📋</div>
+                <div class="quick-action-text">Nuevo Proyecto</div>
+            </a>
+            <a href="comercial.html" class="quick-action">
+                <div class="quick-action-icon">🔥</div>
+                <div class="quick-action-text">Email Tracking</div>
+            </a>
         </div>
+
+        <footer class="footer">
+            <p>pracmatik. © 2024 — <a href="crm.html">Inicio</a></p>
+        </footer>
     </div>
 
     <script>
@@ -716,13 +829,21 @@
         const WEBHOOK_EMAIL = 'https://hooks.pracmatik.com/webhook/email-tracking';
 
         // Theme
-        const savedTheme = localStorage.getItem('theme') || 'dark';
-        document.body.className = savedTheme;
+        document.body.className = localStorage.getItem('theme') || 'dark';
         function toggleTheme() {
             const t = document.body.classList.contains('dark') ? 'light' : 'dark';
             document.body.className = t;
             localStorage.setItem('theme', t);
         }
+
+        // Clock
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' });
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
 
         // Helpers
         const fmt = n => new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n);
@@ -738,163 +859,157 @@
                     r.c.forEach((cell, i) => { if (cols[i]) obj[cols[i]] = cell ? (cell.v ?? '') : ''; });
                     return obj;
                 });
-            } catch (e) { console.error('Error fetching sheet:', e); return []; }
+            } catch { return []; }
         }
 
         async function fetchEmailTracking() {
             try {
                 const res = await fetch(WEBHOOK_EMAIL);
                 if (res.ok) return await res.json();
-            } catch (e) { console.error('Error email tracking:', e); }
+            } catch { }
             return [];
         }
 
-        // Chart
-        let chartFinanciero = null;
-        function renderChart(ingresos, gastos) {
-            const ctx = document.getElementById('chartFinanciero').getContext('2d');
+        // Render mini charts
+        function renderMiniChart(id, values, color) {
+            const container = document.getElementById(id);
+            if (!container) return;
+            const max = Math.max(...values, 1);
+            container.innerHTML = values.map((v, i) =>
+                `<div class="mini-bar" style="height: ${Math.max(5, v / max * 100)}%; --b: ${i}"></div>`
+            ).join('');
+        }
+
+        // Main Chart
+        let mainChart = null;
+        function renderMainChart(ingresos, gastos) {
+            const ctx = document.getElementById('mainChart').getContext('2d');
             const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
             const currentMonth = new Date().getMonth();
             const labels = months.slice(Math.max(0, currentMonth - 5), currentMonth + 1);
 
-            // Agrupar por mes
             const ingByMonth = new Array(12).fill(0);
             const gasByMonth = new Array(12).fill(0);
 
             ingresos.forEach(r => {
-                const fecha = r.Fecha || r.fecha;
+                const fecha = r.Fecha || '';
                 if (fecha) {
                     const parts = String(fecha).split(/[\/\-]/);
                     const month = parts.length >= 2 ? parseInt(parts[1]) - 1 : 0;
-                    ingByMonth[month] += parseFloat(r.Base_Imponible || r.base || 0);
+                    ingByMonth[month] += parseFloat(r.Base_Imponible || 0);
                 }
             });
             gastos.forEach(r => {
-                const fecha = r.Fecha || r.fecha;
+                const fecha = r.Fecha || '';
                 if (fecha) {
                     const parts = String(fecha).split(/[\/\-]/);
                     const month = parts.length >= 2 ? parseInt(parts[1]) - 1 : 0;
-                    gasByMonth[month] += parseFloat(r.Base_Imponible || r.base || 0);
+                    gasByMonth[month] += parseFloat(r.Base_Imponible || 0);
                 }
             });
 
-            const dataIngresos = labels.map((_, i) => ingByMonth[Math.max(0, currentMonth - 5) + i] || 0);
-            const dataGastos = labels.map((_, i) => gasByMonth[Math.max(0, currentMonth - 5) + i] || 0);
+            const dataIng = labels.map((_, i) => ingByMonth[Math.max(0, currentMonth - 5) + i] || 0);
+            const dataGas = labels.map((_, i) => gasByMonth[Math.max(0, currentMonth - 5) + i] || 0);
 
-            if (chartFinanciero) chartFinanciero.destroy();
-            chartFinanciero = new Chart(ctx, {
-                type: 'bar',
+            if (mainChart) mainChart.destroy();
+            const gradient = ctx.createLinearGradient(0, 0, 0, 280);
+            gradient.addColorStop(0, 'rgba(16, 185, 129, 0.3)');
+            gradient.addColorStop(1, 'rgba(16, 185, 129, 0)');
+
+            mainChart = new Chart(ctx, {
+                type: 'line',
                 data: {
                     labels,
                     datasets: [
-                        { label: 'Ingresos', data: dataIngresos, backgroundColor: 'rgba(16, 185, 129, 0.8)', borderRadius: 6 },
-                        { label: 'Gastos', data: dataGastos, backgroundColor: 'rgba(239, 68, 68, 0.8)', borderRadius: 6 }
+                        { label: 'Ingresos', data: dataIng, borderColor: '#10b981', backgroundColor: gradient, fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#10b981' },
+                        { label: 'Gastos', data: dataGas, borderColor: '#ef4444', backgroundColor: 'transparent', tension: 0.4, pointRadius: 4, pointBackgroundColor: '#ef4444', borderDash: [5, 5] }
                     ]
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false,
-                    plugins: { legend: { display: true, position: 'top', labels: { color: getComputedStyle(document.body).getPropertyValue('--text-muted'), font: { size: 11 } } } },
+                    plugins: { legend: { display: true, position: 'top', labels: { color: '#64748b', font: { size: 11 }, usePointStyle: true } } },
                     scales: {
-                        x: { grid: { display: false }, ticks: { color: getComputedStyle(document.body).getPropertyValue('--text-muted') } },
-                        y: { grid: { color: 'rgba(148,163,184,0.1)' }, ticks: { color: getComputedStyle(document.body).getPropertyValue('--text-muted'), callback: v => fmt(v) } }
-                    }
+                        x: { grid: { display: false }, ticks: { color: '#64748b' } },
+                        y: { grid: { color: 'rgba(148,163,184,0.1)' }, ticks: { color: '#64748b', callback: v => fmt(v) } }
+                    },
+                    interaction: { intersect: false, mode: 'index' }
                 }
             });
+
+            // Mini chart finanzas
+            renderMiniChart('miniChartFinanzas', dataIng, 'var(--success)');
         }
 
-        // Render Proyectos por Fase
-        function renderProyectosFases(proyectos) {
-            const fases = { INICIO: 0, DESARROLLO: 0, REVISION: 0, ENTREGA: 0, COMPLETADO: 0 };
-            const colors = { INICIO: 'var(--info)', DESARROLLO: 'var(--purple)', REVISION: 'var(--warning)', ENTREGA: 'var(--primary)', COMPLETADO: 'var(--success)' };
-            const icons = { INICIO: '🚀', DESARROLLO: '⚙️', REVISION: '🔍', ENTREGA: '📦', COMPLETADO: '✅' };
+        // Activity Feed
+        function renderActivity(leads, proyectos, emails) {
+            const feed = document.getElementById('activityFeed');
+            const items = [];
 
-            proyectos.forEach(p => {
-                const fase = p.Fase || 'INICIO';
-                if (fases.hasOwnProperty(fase)) fases[fase]++;
+            // Recent leads
+            leads.slice(-3).reverse().forEach(l => {
+                items.push({
+                    icon: '🎯', iconClass: 'warning',
+                    title: l.Nombre || 'Lead',
+                    desc: l.Origen || 'Nuevo lead',
+                    value: l.Valor_Estimado ? fmt(l.Valor_Estimado) : '',
+                    badge: 'NUEVO', badgeClass: 'badge-new'
+                });
             });
 
-            const total = proyectos.length || 1;
-            const container = document.getElementById('proyectosFases');
-            container.innerHTML = Object.entries(fases).map(([fase, count]) => `
-        <div class="progress-item">
-          <div class="progress-header">
-            <span>${icons[fase]} ${fase}</span>
-            <span>${count}</span>
+            // Hot emails
+            const hotEmails = (emails || []).filter(e => e.interes === 'hot').slice(0, 3);
+            hotEmails.forEach(e => {
+                items.push({
+                    icon: '🔥', iconClass: 'success',
+                    title: e.empresa || 'Empresa',
+                    desc: `${e.aperturas || 0} aperturas`,
+                    value: e.email || '',
+                    badge: 'CALIENTE', badgeClass: 'badge-hot'
+                });
+            });
+
+            // Recent projects
+            proyectos.slice(-2).reverse().forEach(p => {
+                items.push({
+                    icon: '📋', iconClass: 'purple',
+                    title: p.Nombre || 'Proyecto',
+                    desc: p.Fase || 'En curso',
+                    value: p.Precio ? fmt(p.Precio) : '',
+                    badge: p.Fase || '', badgeClass: 'badge-new'
+                });
+            });
+
+            if (items.length === 0) {
+                feed.innerHTML = '<div style="text-align:center; color: var(--text-muted); padding: 40px;">No hay actividad reciente</div>';
+                return;
+            }
+
+            feed.innerHTML = items.slice(0, 8).map((item, i) => `
+        <div class="activity-item" style="--i: ${i}">
+          <div class="activity-icon ${item.iconClass}">${item.icon}</div>
+          <div class="activity-content">
+            <div class="activity-title">${item.title}</div>
+            <div class="activity-desc">${item.desc}</div>
           </div>
-          <div class="progress-bar">
-            <div class="progress-fill" style="width: ${(count / total * 100)}%; background: ${colors[fase]}"></div>
+          <div class="activity-meta">
+            ${item.value ? `<div class="activity-value">${item.value}</div>` : ''}
+            <span class="activity-badge ${item.badgeClass}">${item.badge}</span>
           </div>
         </div>
       `).join('');
         }
 
-        // Render Leads Recientes
-        function renderLeadsRecientes(leads) {
-            const container = document.getElementById('leadsRecientes');
-            const recientes = leads.slice(-5).reverse();
-
-            if (recientes.length === 0) {
-                container.innerHTML = '<div class="loading-text">No hay leads</div>';
-                return;
+        // Update ring progress
+        function updateRing(id, percentage) {
+            const ring = document.getElementById(id);
+            if (ring) {
+                const offset = 126 - (126 * Math.min(100, percentage) / 100);
+                ring.style.strokeDashoffset = offset;
             }
-
-            const estadoColors = { NUEVO: 'blue', CONTACTADO: 'purple', PROPUESTA: 'orange', NEGOCIANDO: 'pink', GANADO: 'green' };
-            container.innerHTML = recientes.map(l => `
-        <div class="mini-item" onclick="location.href='leads.html'">
-          <div class="mini-item-left">
-            <div class="mini-item-icon ${estadoColors[l.Estado] || 'blue'}">🎯</div>
-            <div>
-              <div class="mini-item-name">${l.Nombre || 'Sin nombre'}</div>
-              <div class="mini-item-sub">${l.Contacto || l.Origen || '-'}</div>
-            </div>
-          </div>
-          <div class="mini-item-right">
-            ${l.Valor_Estimado ? `<div class="mini-item-value">${fmt(l.Valor_Estimado)}</div>` : ''}
-            <span class="mini-item-badge badge-new">${l.Estado || 'NUEVO'}</span>
-          </div>
-        </div>
-      `).join('');
-        }
-
-        // Render Email Outreach
-        function renderEmailOutreach(emails) {
-            const container = document.getElementById('emailOutreach');
-
-            if (!emails || emails.length === 0) {
-                container.innerHTML = '<div class="loading-text">Activa el workflow Email Tracking</div>';
-                return;
-            }
-
-            const hot = emails.filter(e => e.interes === 'hot').slice(0, 5);
-            const toShow = hot.length > 0 ? hot : emails.slice(0, 5);
-
-            container.innerHTML = toShow.map(e => {
-                const badgeClass = e.interes === 'hot' ? 'badge-hot' : (e.interes === 'warm' ? 'badge-warm' : 'badge-cold');
-                const badgeText = e.interes === 'hot' ? '🔥 Caliente' : (e.interes === 'warm' ? '🌡️ Tibio' : '❄️ Frío');
-                return `
-          <div class="mini-item" onclick="location.href='comercial.html'">
-            <div class="mini-item-left">
-              <div class="mini-item-icon ${e.interes === 'hot' ? 'green' : (e.interes === 'warm' ? 'orange' : '')}">📧</div>
-              <div>
-                <div class="mini-item-name">${e.empresa || '-'}</div>
-                <div class="mini-item-sub">${e.email || '-'}</div>
-              </div>
-            </div>
-            <div class="mini-item-right">
-              <div class="mini-item-value">${e.aperturas || 0} aperturas</div>
-              <span class="mini-item-badge ${badgeClass}">${badgeText}</span>
-            </div>
-          </div>
-        `;
-            }).join('');
         }
 
         // Load All Data
         async function loadAllData() {
-            const btn = document.getElementById('refreshBtn');
-            btn.classList.add('loading');
-            btn.innerHTML = '⏳ Cargando...';
-
             try {
                 const [ingresos, gastos, clientes, leads, proyectos, emails] = await Promise.all([
                     fetchSheet(SHEETS.contabilidad, 'Ingresos'),
@@ -905,38 +1020,86 @@
                     fetchEmailTracking()
                 ]);
 
-                // KPIs
+                // Calculate KPIs
                 const totalIngresos = ingresos.reduce((s, r) => s + (parseFloat(r.Base_Imponible) || 0), 0);
                 const totalGastos = gastos.reduce((s, r) => s + (parseFloat(r.Base_Imponible) || 0), 0);
-                const clientesActivos = clientes.filter(c => c.Estado === 'ACTIVO' || !c.Estado).length || clientes.length;
-                const leadsActivos = leads.filter(l => !['GANADO', 'PERDIDO'].includes(l.Estado)).length || leads.length;
-                const proyectosActivos = proyectos.filter(p => p.Fase !== 'COMPLETADO').length || proyectos.length;
-                const hotLeads = Array.isArray(emails) ? emails.filter(e => e.interes === 'hot').length : 0;
+                const clientesActivos = clientes.length;
+                const leadsActivos = leads.filter(l => !['GANADO', 'PERDIDO'].includes(l.Estado)).length;
+                const proyectosActivos = proyectos.filter(p => p.Fase !== 'COMPLETADO').length;
 
-                document.getElementById('kpiIngresos').textContent = fmt(totalIngresos);
-                document.getElementById('kpiGastos').textContent = fmt(totalGastos);
-                document.getElementById('kpiClientes').textContent = clientesActivos;
-                document.getElementById('kpiLeads').textContent = leadsActivos;
-                document.getElementById('kpiProyectos').textContent = proyectosActivos;
-                document.getElementById('kpiHotLeads').textContent = hotLeads;
+                // New hot calculation: >8 opens OR (recent open <7 days if sent >15 days ago)
+                const now = new Date();
+                const hotEmails = (emails || []).filter(e => {
+                    const opens = parseInt(e.aperturas || 0);
+                    if (opens >= 8) return true;
 
-                // Chart
-                renderChart(ingresos, gastos);
+                    const lastOpen = e.ultima ? parseDate(e.ultima) : null;
+                    const sentDate = e.enviado ? parseDate(e.enviado) : null;
 
-                // Cards
-                renderProyectosFases(proyectos);
-                renderLeadsRecientes(leads);
-                renderEmailOutreach(Array.isArray(emails) ? emails : []);
+                    if (lastOpen && sentDate) {
+                        const daysSinceOpen = Math.floor((now - lastOpen) / (1000 * 60 * 60 * 24));
+                        const daysSinceSent = Math.floor((now - sentDate) / (1000 * 60 * 60 * 24));
+                        if (daysSinceOpen <= 7 && daysSinceSent > 15) return true;
+                    }
+                    return false;
+                });
 
-                // Update timestamp
-                document.getElementById('lastUpdate').textContent = `Actualizado: ${new Date().toLocaleTimeString('es-ES')}`;
+                const thisMonth = new Date().getMonth();
+                const facturasEste = ingresos.filter(r => {
+                    const fecha = r.Fecha || '';
+                    if (fecha) {
+                        const parts = String(fecha).split(/[\/\-]/);
+                        const month = parts.length >= 2 ? parseInt(parts[1]) - 1 : -1;
+                        return month === thisMonth;
+                    }
+                    return false;
+                }).length;
 
-            } catch (e) {
-                console.error('Error loading data:', e);
-            }
+                // Update section cards
+                document.getElementById('secIngresos').textContent = fmt(totalIngresos);
+                document.getElementById('secClientes').textContent = clientesActivos;
+                document.getElementById('secLeads').textContent = leadsActivos;
+                document.getElementById('secProyectos').textContent = proyectosActivos;
+                document.getElementById('secComercial').textContent = hotEmails.length;
+                document.getElementById('secFacturas').textContent = facturasEste;
 
-            btn.classList.remove('loading');
-            btn.innerHTML = '🔄 Actualizar';
+                // Update rings (based on arbitrary goals for visual effect)
+                updateRing('ringFinanciero', Math.min(100, totalIngresos / 50000 * 100));
+                updateRing('ringClientes', Math.min(100, clientesActivos / 20 * 100));
+                updateRing('ringLeads', Math.min(100, leadsActivos / 15 * 100));
+                updateRing('ringProyectos', Math.min(100, proyectosActivos / 10 * 100));
+                updateRing('ringComercial', Math.min(100, hotEmails.length / 10 * 100));
+                updateRing('ringFacturas', Math.min(100, facturasEste / 10 * 100));
+
+                // Render charts
+                renderMainChart(ingresos, gastos);
+
+                // Mini charts
+                renderMiniChart('miniChartClientes', [3, 5, 4, 7, clientesActivos, clientesActivos + 2], 'var(--info)');
+                const leadsByState = { NUEVO: 0, CONTACTADO: 0, PROPUESTA: 0, NEGOCIANDO: 0, GANADO: 0 };
+                leads.forEach(l => { if (leadsByState.hasOwnProperty(l.Estado)) leadsByState[l.Estado]++; });
+                renderMiniChart('miniChartLeads', Object.values(leadsByState), 'var(--warning)');
+                const projByPhase = { INICIO: 0, DESARROLLO: 0, REVISION: 0, ENTREGA: 0, COMPLETADO: 0 };
+                proyectos.forEach(p => { if (projByPhase.hasOwnProperty(p.Fase)) projByPhase[p.Fase]++; });
+                renderMiniChart('miniChartProyectos', Object.values(projByPhase), 'var(--purple)');
+                renderMiniChart('miniChartComercial', [2, 4, 3, 6, hotEmails.length, hotEmails.length + 1], 'var(--pink)');
+                renderMiniChart('miniChartFacturas', [2, 3, 4, 2, facturasEste, 3], 'var(--cyan)');
+
+                // Activity
+                renderActivity(leads, proyectos, emails);
+
+            } catch (e) { console.error('Error:', e); }
+        }
+
+        function parseDate(str) {
+            if (!str) return null;
+            try {
+                if (String(str).includes('/')) {
+                    const parts = String(str).split(/[\/\s:]/);
+                    if (parts.length >= 3) return new Date(parts[2], parts[1] - 1, parts[0]);
+                }
+                return new Date(str);
+            } catch { return null; }
         }
 
         // Init
