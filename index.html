@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 Contabilidad Pracmatik</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --primary-dark: #4f46e5;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --bg-dark: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.8);
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: rgba(148, 163, 184, 0.2);
+            --glass: rgba(255, 255, 255, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            background-image:
+                radial-gradient(at 20% 20%, rgba(99, 102, 241, 0.15) 0, transparent 50%),
+                radial-gradient(at 80% 80%, rgba(16, 185, 129, 0.1) 0, transparent 50%);
+            min-height: 100vh;
+            color: var(--text);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: fadeIn 0.6s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-light), var(--success));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 25px;
+            background: var(--glass);
+            padding: 6px;
+            border-radius: 16px;
+            overflow-x: auto;
+        }
+
+        .tab {
+            flex: 1;
+            min-width: 100px;
+            padding: 14px 20px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .tab:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text);
+        }
+
+        .tab.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+        }
+
+        .tab.active.ingreso {
+            background: var(--success);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .tab.active.gasto {
+            background: var(--danger);
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+        }
+
+        .tab.active.compra {
+            background: var(--warning);
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+        }
+
+        .tab.active.pago {
+            background: var(--info);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .tab-icon {
+            font-size: 20px;
+        }
+
+        /* Form panels */
+        .panel {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        label .required {
+            color: var(--danger);
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 15px;
+            font-family: inherit;
+            color: var(--text);
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        input::placeholder {
+            color: var(--text-muted);
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-group input {
+            flex: 1;
+        }
+
+        .input-suffix {
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            margin-top: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            font-family: inherit;
+            color: white;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .submit-btn.ingreso {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .submit-btn.gasto {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .submit-btn.compra {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .submit-btn.pago {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .submit-btn.loading::after {
+            content: "";
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 480px;
+            width: 100%;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+
+        .modal-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 40px;
+        }
+
+        .modal-icon.success {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .modal h2 {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .modal .subtitle {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .result-item {
+            background: var(--glass);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .result-item.full {
+            grid-column: 1 / -1;
+        }
+
+        .result-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .result-value {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .result-value.highlight {
+            font-size: 28px;
+            background: linear-gradient(135deg, var(--primary-light), var(--success));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: var(--primary);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            width: 100%;
+            padding: 16px;
+            margin-top: 25px;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: inherit;
+            color: var(--text);
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .error-msg {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .error-msg.show {
+            display: block;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            20%,
+            60% {
+                transform: translateX(-5px);
+            }
+
+            40%,
+            80% {
+                transform: translateX(5px);
+            }
+        }
+
+        .dashboard-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: var(--primary-light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .dashboard-link:hover {
+            color: var(--text);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">📊</div>
+            <h1>Contabilidad Pracmatik</h1>
+            <p class="subtitle">Sistema de registro fiscal automatizado · AEAT</p>
+        </header>
+
+        <div class="card">
+            <div class="tabs">
+                <button class="tab active ingreso" data-panel="ingreso" onclick="switchTab(this)">
+                    <span class="tab-icon">📈</span>
+                    <span>Ingresos</span>
+                </button>
+                <button class="tab gasto" data-panel="gasto" onclick="switchTab(this)">
+                    <span class="tab-icon">📉</span>
+                    <span>Gastos</span>
+                </button>
+                <button class="tab compra" data-panel="compra" onclick="switchTab(this)">
+                    <span class="tab-icon">🛒</span>
+                    <span>Compras</span>
+                </button>
+                <button class="tab pago" data-panel="pago" onclick="switchTab(this)">
+                    <span class="tab-icon">💳</span>
+                    <span>Pagos</span>
+                </button>
+            </div>
+
+            <div id="errorMsg" class="error-msg"></div>
+
+            <!-- INGRESOS -->
+            <div id="panel-ingreso" class="panel active">
+                <form id="form-ingreso" onsubmit="submitForm(event, 'INGRESO')">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Fecha <span class="required">*</span></label>
+                            <input type="date" name="fecha" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Cliente <span class="required">*</span></label>
+                            <input type="text" name="tercero" placeholder="Nombre o razón social" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>NIF/CIF <span class="required">*</span></label>
+                            <input type="text" name="nif" placeholder="B12345678" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Concepto <span class="required">*</span></label>
+                            <input type="text" name="concepto" placeholder="Descripción del servicio" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Base Imponible <span class="required">*</span></label>
+                            <div class="input-group">
+                                <input type="number" name="base" step="0.01" min="0" placeholder="1000.00" required>
+                                <span class="input-suffix">€</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>IVA</label>
+                            <select name="iva_pct">
+                                <option value="21">21% General</option>
+                                <option value="10">10% Reducido</option>
+                                <option value="4">4% Superreducido</option>
+                                <option value="0">0% Exento</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Retención IRPF</label>
+                        <select name="irpf_pct">
+                            <option value="0">0% Sin retención</option>
+                            <option value="7">7% Nuevos autónomos</option>
+                            <option value="15" selected>15% General</option>
+                            <option value="19">19% Alquileres</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="submit-btn ingreso">
+                        <span>💾</span> Registrar Ingreso
+                    </button>
+                </form>
+            </div>
+
+            <!-- GASTOS -->
+            <div id="panel-gasto" class="panel">
+                <form id="form-gasto" onsubmit="submitForm(event, 'GASTO')">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Fecha <span class="required">*</span></label>
+                            <input type="date" name="fecha" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Proveedor <span class="required">*</span></label>
+                            <input type="text" name="tercero" placeholder="Nombre del proveedor" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>NIF/CIF</label>
+                            <input type="text" name="nif" placeholder="B12345678">
+                        </div>
+                        <div class="form-group">
+                            <label>Categoría</label>
+                            <select name="categoria">
+                                <option value="SUMINISTROS">Suministros (luz, agua, gas)</option>
+                                <option value="TELEFONIA">Telefonía e Internet</option>
+                                <option value="MATERIAL">Material de oficina</option>
+                                <option value="SOFTWARE">Software y suscripciones</option>
+                                <option value="SERVICIOS">Servicios profesionales</option>
+                                <option value="ALQUILER">Alquiler local/oficina</option>
+                                <option value="GENERAL" selected>Otros gastos</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Concepto <span class="required">*</span></label>
+                        <input type="text" name="concepto" placeholder="Descripción del gasto" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Base Imponible <span class="required">*</span></label>
+                            <div class="input-group">
+                                <input type="number" name="base" step="0.01" min="0" placeholder="500.00" required>
+                                <span class="input-suffix">€</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>IVA</label>
+                            <select name="iva_pct">
+                                <option value="21" selected>21% General</option>
+                                <option value="10">10% Reducido</option>
+                                <option value="4">4% Superreducido</option>
+                                <option value="0">0% Sin IVA</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="submit-btn gasto">
+                        <span>💾</span> Registrar Gasto
+                    </button>
+                </form>
+            </div>
+
+            <!-- COMPRAS -->
+            <div id="panel-compra" class="panel">
+                <form id="form-compra" onsubmit="submitForm(event, 'COMPRA')">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Fecha <span class="required">*</span></label>
+                            <input type="date" name="fecha" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Proveedor <span class="required">*</span></label>
+                            <input type="text" name="tercero" placeholder="Tienda o proveedor" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Producto <span class="required">*</span></label>
+                            <input type="text" name="producto" placeholder="Descripción del producto" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Categoría</label>
+                            <select name="categoria">
+                                <option value="MATERIAL">Material de oficina</option>
+                                <option value="SOFTWARE">Software/Licencias</option>
+                                <option value="HARDWARE">Hardware/Equipos</option>
+                                <option value="MOBILIARIO">Mobiliario</option>
+                                <option value="TRANSPORTE">Transporte</option>
+                                <option value="COMBUSTIBLE">Combustible</option>
+                                <option value="GENERAL" selected>Otros</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Importe sin IVA <span class="required">*</span></label>
+                            <div class="input-group">
+                                <input type="number" name="base" step="0.01" min="0" placeholder="100.00" required>
+                                <span class="input-suffix">€</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>IVA</label>
+                            <select name="iva_pct">
+                                <option value="21" selected>21% General</option>
+                                <option value="10">10% Reducido</option>
+                                <option value="4">4% Superreducido</option>
+                                <option value="0">0% Sin IVA</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="submit-btn compra">
+                        <span>💾</span> Registrar Compra
+                    </button>
+                </form>
+            </div>
+
+            <!-- PAGOS -->
+            <div id="panel-pago" class="panel">
+                <form id="form-pago" onsubmit="submitForm(event, 'PAGO')">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Fecha <span class="required">*</span></label>
+                            <input type="date" name="fecha" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Destinatario <span class="required">*</span></label>
+                            <input type="text" name="tercero" placeholder="A quién se paga" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Concepto <span class="required">*</span></label>
+                            <input type="text" name="concepto" placeholder="Motivo del pago" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Categoría</label>
+                            <select name="categoria">
+                                <option value="SEGUROS">Seguros</option>
+                                <option value="CUOTAS">Cuotas/Suscripciones</option>
+                                <option value="IMPUESTOS">Impuestos</option>
+                                <option value="NOMINAS">Nóminas</option>
+                                <option value="AUTONOMO">Cuota Autónomo</option>
+                                <option value="GENERAL" selected>Otros</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Importe <span class="required">*</span></label>
+                            <div class="input-group">
+                                <input type="number" name="base" step="0.01" min="0" placeholder="300.00" required>
+                                <span class="input-suffix">€</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>¿Deducible?</label>
+                            <select name="deducible">
+                                <option value="true" selected>Sí, deducible</option>
+                                <option value="false">No deducible</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="submit-btn pago">
+                        <span>💾</span> Registrar Pago
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <a href="dashboard.html" class="dashboard-link">📊 Ver Dashboard Contable →</a>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="resultModal">
+        <div class="modal">
+            <div class="modal-icon success">✓</div>
+            <h2>Registro Guardado</h2>
+            <p class="subtitle">Sistema Contable Pracmatik</p>
+            <div id="resultContent" class="result-grid"></div>
+            <button class="close-btn" onclick="closeModal()">✨ Registrar otro</button>
+        </div>
+    </div>
+
+    <script>
+        const WEBHOOK_URL = 'https://hooks.pracmatik.com/webhook/contabilidad-pragmatik';
+
+        // Set today's date on all date inputs
+        document.querySelectorAll('input[type="date"]').forEach(input => {
+            input.valueAsDate = new Date();
+        });
+
+        function switchTab(tab) {
+            const panelId = tab.dataset.panel;
+
+            // Update tabs
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            // Update panels
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('panel-' + panelId).classList.add('active');
+
+            // Clear error
+            document.getElementById('errorMsg').classList.remove('show');
+        }
+
+        async function submitForm(event, tipo) {
+            event.preventDefault();
+
+            const form = event.target;
+            const btn = form.querySelector('.submit-btn');
+            const errorDiv = document.getElementById('errorMsg');
+
+            errorDiv.classList.remove('show');
+            btn.disabled = true;
+            btn.classList.add('loading');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span>Procesando...</span>';
+
+            const formData = new FormData(form);
+            const data = {
+                tipo_operacion: tipo,
+                fecha: formData.get('fecha'),
+                tercero: formData.get('tercero'),
+                nif: formData.get('nif') || '',
+                concepto: formData.get('concepto') || formData.get('producto') || '',
+                producto: formData.get('producto') || '',
+                categoria: formData.get('categoria') || 'GENERAL',
+                base: parseFloat(formData.get('base')) || 0,
+                iva_pct: parseInt(formData.get('iva_pct')) || 0,
+                irpf_pct: parseInt(formData.get('irpf_pct')) || 0,
+                deducible: formData.get('deducible') !== 'false'
+            };
+
+            try {
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) throw new Error('Error del servidor');
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showResult(result);
+                    form.reset();
+                    document.querySelectorAll('input[type="date"]').forEach(input => {
+                        input.valueAsDate = new Date();
+                    });
+                } else {
+                    throw new Error(result.message || 'Error desconocido');
+                }
+
+            } catch (error) {
+                errorDiv.textContent = '❌ ' + error.message;
+                errorDiv.classList.add('show');
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('loading');
+                btn.innerHTML = originalText;
+            }
+        }
+
+        function showResult(data) {
+            const content = document.getElementById('resultContent');
+
+            content.innerHTML = `
+        <div class="result-item">
+          <div class="result-label">ID</div>
+          <div class="result-value">${data.ID}</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">Trimestre</div>
+          <div class="result-value"><span class="badge">${data.Trimestre}</span></div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">Base</div>
+          <div class="result-value">${data.Base.toFixed(2)} €</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">IVA (${data.IVA_Porcentaje}%)</div>
+          <div class="result-value">+${data.IVA_Cuota.toFixed(2)} €</div>
+        </div>
+        ${data.IRPF_Cuota > 0 ? `
+        <div class="result-item">
+          <div class="result-label">IRPF (${data.IRPF_Porcentaje}%)</div>
+          <div class="result-value">-${data.IRPF_Cuota.toFixed(2)} €</div>
+        </div>
+        ` : ''}
+        <div class="result-item full">
+          <div class="result-label">Total</div>
+          <div class="result-value highlight">${data.Total.toFixed(2)} €</div>
+        </div>
+      `;
+
+            document.getElementById('resultModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('resultModal').classList.remove('active');
+        }
+
+        document.getElementById('resultModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) closeModal();
+        });
+    </script>
+</body>
+
+</html>
