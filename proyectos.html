@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📋 Proyectos - CRM Pracmatik</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --purple: #8b5cf6;
+        }
+
+        .dark {
+            --bg-main: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.9);
+            --bg-glass: rgba(255, 255, 255, 0.05);
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: rgba(148, 163, 184, 0.2);
+        }
+
+        .light {
+            --bg-main: #f1f5f9;
+            --bg-card: rgba(255, 255, 255, 0.95);
+            --bg-glass: rgba(0, 0, 0, 0.03);
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-main);
+            min-height: 100vh;
+            color: var(--text);
+        }
+
+        .bg-depth {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .bg-orb {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.25;
+            background: var(--primary);
+            bottom: -150px;
+            right: -100px;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translate(0, 0);
+            }
+
+            50% {
+                transform: translate(-30px, -30px);
+            }
+        }
+
+        .light .bg-orb {
+            opacity: 0.1;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .nav a:hover {
+            background: var(--bg-glass);
+            color: var(--text);
+        }
+
+        .nav a.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 800;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            background: var(--primary);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Kanban */
+        .kanban {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            min-height: 500px;
+        }
+
+        @media (max-width: 1200px) {
+            .kanban {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 700px) {
+            .kanban {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .kanban-column {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            min-height: 450px;
+        }
+
+        .kanban-header {
+            padding: 15px;
+            border-bottom: 2px solid var(--col-color, var(--primary));
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .kanban-title {
+            font-size: 14px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .kanban-count {
+            background: var(--col-color, var(--primary));
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .kanban-body {
+            flex: 1;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            min-height: 350px;
+            transition: background 0.2s;
+        }
+
+        .kanban-body.dragover {
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 0 0 16px 16px;
+        }
+
+        .project-card {
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 16px;
+            cursor: grab;
+            transition: all 0.2s;
+        }
+
+        .project-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .project-card.dragging {
+            opacity: 0.4;
+            transform: rotate(3deg);
+        }
+
+        .project-name {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .project-client {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .project-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .project-price {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--success);
+            margin-bottom: 10px;
+        }
+
+        .project-progress {
+            margin-bottom: 8px;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: var(--bg-main);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--success));
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+
+        .progress-text {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 4px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .project-dates {
+            font-size: 11px;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid var(--border);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 550px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal h2 {
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            font-size: 14px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            outline: none;
+            font-family: inherit;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-actions .btn {
+            flex: 1;
+        }
+
+        .btn-secondary {
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .status-msg {
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            display: none;
+        }
+
+        .status-msg.success {
+            display: block;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .status-msg.error {
+            display: block;
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+    </style>
+</head>
+
+<body class="dark">
+    <div class="bg-depth">
+        <div class="bg-orb"></div>
+    </div>
+    <div class="container">
+        <nav class="nav">
+            <a href="crm.html">🏠 CRM</a>
+            <a href="clientes.html">👥 Clientes</a>
+            <a href="leads.html">🎯 Leads</a>
+            <a href="proyectos.html" class="active">📋 Proyectos</a>
+            <a href="dashboard.html">📊 Contabilidad</a>
+        </nav>
+
+        <header class="header">
+            <h1>📋 Proyectos Kanban</h1>
+            <button class="btn" onclick="openModal()">➕ Nuevo Proyecto</button>
+        </header>
+
+        <div class="kanban" id="kanban"></div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <h2 id="modalTitle">➕ Nuevo Proyecto</h2>
+            <div id="statusMsg" class="status-msg"></div>
+            <form id="projectForm" onsubmit="saveProject(event)">
+                <input type="hidden" id="projectId" name="id">
+                <div class="form-group">
+                    <label>Nombre del Proyecto *</label>
+                    <input type="text" name="nombre" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Cliente</label>
+                        <select name="cliente" id="clienteSelect"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Precio (€)</label>
+                        <input type="number" name="precio" placeholder="1500">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea name="descripcion" rows="3" placeholder="Detalle del proyecto..."></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Fase</label>
+                        <select name="fase">
+                            <option value="INICIO">🚀 Inicio</option>
+                            <option value="DESARROLLO">⚙️ Desarrollo</option>
+                            <option value="REVISION">🔍 Revisión</option>
+                            <option value="ENTREGA">📦 Entrega</option>
+                            <option value="COMPLETADO">✅ Completado</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Progreso (%)</label>
+                        <input type="number" name="progreso" min="0" max="100" value="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Fecha de Inicio</label>
+                    <input type="date" name="fecha_inicio">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn">💾 Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const SHEETS_ID = '1jd6ahi9HUk1HAPDO2jby9rvC2RXNtGG0EzAeY7ijOss';
+        const WEBHOOK = 'https://hooks.pracmatik.com/webhook/crm-proyecto';
+        const PHASES = ['INICIO', 'DESARROLLO', 'REVISION', 'ENTREGA', 'COMPLETADO'];
+        const PHASE_INFO = {
+            INICIO: { icon: '🚀', color: '#3b82f6', label: 'Inicio' },
+            DESARROLLO: { icon: '⚙️', color: '#8b5cf6', label: 'Desarrollo' },
+            REVISION: { icon: '🔍', color: '#f59e0b', label: 'Revisión' },
+            ENTREGA: { icon: '📦', color: '#6366f1', label: 'Entrega' },
+            COMPLETADO: { icon: '✅', color: '#10b981', label: 'Completado' }
+        };
+        let allProjects = [], allClients = [];
+
+        document.body.className = localStorage.getItem('theme') || 'dark';
+
+        async function fetchData() {
+            try {
+                const [projRes, cliRes] = await Promise.all([
+                    fetch(`https://docs.google.com/spreadsheets/d/${SHEETS_ID}/gviz/tq?tqx=out:json&sheet=Proyectos`),
+                    fetch(`https://docs.google.com/spreadsheets/d/${SHEETS_ID}/gviz/tq?tqx=out:json&sheet=Clientes`)
+                ]);
+                const parseSheet = async (res) => {
+                    const text = await res.text();
+                    const json = JSON.parse(text.substring(47, text.length - 2));
+                    const cols = json.table.cols.map(c => c.label);
+                    return json.table.rows.map(r => {
+                        const obj = {};
+                        r.c.forEach((cell, i) => { obj[cols[i]] = cell ? (cell.v || '') : ''; });
+                        return obj;
+                    });
+                };
+                allProjects = (await parseSheet(projRes)).filter(p => p.Nombre || p.ID_Proyecto);
+                allClients = (await parseSheet(cliRes)).filter(c => c.Nombre || c.ID_Cliente);
+            } catch { allProjects = []; allClients = []; }
+            renderKanban();
+            renderClientSelect();
+        }
+
+        function renderKanban() {
+            const kanban = document.getElementById('kanban');
+            kanban.innerHTML = PHASES.map(phase => {
+                const info = PHASE_INFO[phase];
+                const projects = allProjects.filter(p => (p.Fase || 'INICIO') === phase);
+                return `
+          <div class="kanban-column" style="--col-color: ${info.color}">
+            <div class="kanban-header">
+              <span class="kanban-title">${info.icon} ${info.label}</span>
+              <span class="kanban-count">${projects.length}</span>
+            </div>
+            <div class="kanban-body" data-phase="${phase}" ondrop="drop(event)" ondragover="dragOver(event)" ondragleave="dragLeave(event)">
+              ${projects.map(p => {
+                    const progress = parseInt(p.Progreso) || 0;
+                    const client = allClients.find(c => c.ID_Cliente === p.ID_Cliente);
+                    return `
+                  <div class="project-card" draggable="true" ondragstart="dragStart(event)" data-id="${p.ID_Proyecto}" onclick="editProject('${p.ID_Proyecto}')">
+                    <div class="project-name">${p.Nombre}</div>
+                    ${client ? `<div class="project-client">👤 ${client.Nombre}</div>` : ''}
+                    ${p.Descripcion ? `<div class="project-desc">${p.Descripcion}</div>` : ''}
+                    ${p.Precio ? `<div class="project-price">${parseInt(p.Precio).toLocaleString('es-ES')} €</div>` : ''}
+                    <div class="project-progress">
+                      <div class="progress-bar"><div class="progress-fill" style="width: ${progress}%"></div></div>
+                      <div class="progress-text"><span>Progreso</span><span>${progress}%</span></div>
+                    </div>
+                    <div class="project-dates">
+                      <span>📅 ${p.Fecha_Inicio || 'Sin fecha'}</span>
+                      ${p.Fecha_Fase_Cambio ? `<span>🔄 ${p.Fecha_Fase_Cambio}</span>` : ''}
+                    </div>
+                  </div>
+                `;
+                }).join('')}
+            </div>
+          </div>
+        `;
+            }).join('');
+        }
+
+        function renderClientSelect() {
+            const select = document.getElementById('clienteSelect');
+            select.innerHTML = '<option value="">-- Sin cliente --</option>' +
+                allClients.map(c => `<option value="${c.ID_Cliente}">${c.Nombre}</option>`).join('');
+        }
+
+        let draggedId = null;
+        function dragStart(e) {
+            e.stopPropagation();
+            draggedId = e.target.dataset.id;
+            e.target.classList.add('dragging');
+        }
+        function dragOver(e) { e.preventDefault(); e.currentTarget.classList.add('dragover'); }
+        function dragLeave(e) { e.currentTarget.classList.remove('dragover'); }
+        async function drop(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('dragover');
+            document.querySelectorAll('.dragging').forEach(el => el.classList.remove('dragging'));
+            const newPhase = e.currentTarget.dataset.phase;
+            if (draggedId && newPhase) {
+                const now = new Date().toLocaleDateString('es-ES');
+                await fetch(WEBHOOK, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: draggedId, fase: newPhase, fecha_fase_cambio: now, action: 'update_fase' })
+                });
+                fetchData();
+            }
+        }
+
+        function openModal(project = null) {
+            document.getElementById('modal').classList.add('active');
+            document.getElementById('statusMsg').className = 'status-msg';
+            const form = document.getElementById('projectForm');
+            if (project) {
+                document.getElementById('modalTitle').textContent = '✏️ Editar Proyecto';
+                document.getElementById('projectId').value = project.ID_Proyecto;
+                form.nombre.value = project.Nombre || '';
+                form.cliente.value = project.ID_Cliente || '';
+                form.precio.value = project.Precio || '';
+                form.descripcion.value = project.Descripcion || '';
+                form.fase.value = project.Fase || 'INICIO';
+                form.progreso.value = project.Progreso || 0;
+                form.fecha_inicio.value = project.Fecha_Inicio || '';
+            } else {
+                document.getElementById('modalTitle').textContent = '➕ Nuevo Proyecto';
+                form.reset();
+                document.getElementById('projectId').value = '';
+                form.fecha_inicio.valueAsDate = new Date();
+            }
+        }
+        function closeModal() { document.getElementById('modal').classList.remove('active'); }
+        function editProject(id) {
+            const project = allProjects.find(p => p.ID_Proyecto === id);
+            if (project) openModal(project);
+        }
+
+        async function saveProject(e) {
+            e.preventDefault();
+            const form = e.target;
+            const btn = form.querySelector('[type="submit"]');
+            const statusMsg = document.getElementById('statusMsg');
+            btn.disabled = true;
+
+            const data = {
+                id: document.getElementById('projectId').value,
+                nombre: form.nombre.value,
+                cliente: form.cliente.value,
+                precio: form.precio.value,
+                descripcion: form.descripcion.value,
+                fase: form.fase.value,
+                progreso: form.progreso.value,
+                fecha_inicio: form.fecha_inicio.value
+            };
+
+            try {
+                await fetch(WEBHOOK, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+                statusMsg.textContent = '✅ Proyecto guardado';
+                statusMsg.className = 'status-msg success';
+                setTimeout(() => { closeModal(); fetchData(); }, 1000);
+            } catch {
+                statusMsg.textContent = '❌ Error';
+                statusMsg.className = 'status-msg error';
+            }
+            btn.disabled = false;
+        }
+
+        if (location.hash === '#nuevo') openModal();
+        fetchData();
+    </script>
+</body>
+
+</html>

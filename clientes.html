@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👥 Clientes - CRM Pracmatik</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+        }
+
+        .dark {
+            --bg-main: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.9);
+            --bg-glass: rgba(255, 255, 255, 0.05);
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: rgba(148, 163, 184, 0.2);
+        }
+
+        .light {
+            --bg-main: #f1f5f9;
+            --bg-card: rgba(255, 255, 255, 0.95);
+            --bg-glass: rgba(0, 0, 0, 0.03);
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-main);
+            min-height: 100vh;
+            color: var(--text);
+            transition: all 0.4s;
+        }
+
+        .bg-depth {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .bg-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.25;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .bg-orb.o1 {
+            width: 500px;
+            height: 500px;
+            background: var(--success);
+            top: -150px;
+            right: -100px;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translate(0, 0);
+            }
+
+            50% {
+                transform: translate(-30px, 30px);
+            }
+        }
+
+        .light .bg-orb {
+            opacity: 0.1;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .nav a:hover {
+            background: var(--bg-glass);
+            color: var(--text);
+        }
+
+        .nav a.active {
+            background: var(--success);
+            color: white;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 800;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            background: var(--success);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 12px 16px;
+            font-size: 14px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            outline: none;
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary);
+        }
+
+        .clients-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 15px;
+        }
+
+        .client-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .client-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .client-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .client-name {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .client-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .client-badge.activo {
+            background: var(--success);
+            color: white;
+        }
+
+        .client-badge.inactivo {
+            background: var(--text-muted);
+            color: white;
+        }
+
+        .client-info {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .client-projects {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .project-tag {
+            padding: 4px 10px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 12px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal h2 {
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            font-size: 14px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            outline: none;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-actions .btn {
+            flex: 1;
+        }
+
+        .btn-secondary {
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: none;
+        }
+
+        .status-msg {
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            display: none;
+        }
+
+        .status-msg.success {
+            display: block;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+
+        .status-msg.error {
+            display: block;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+        }
+    </style>
+</head>
+
+<body class="dark">
+    <div class="bg-depth">
+        <div class="bg-orb o1"></div>
+    </div>
+    <div class="container">
+        <nav class="nav">
+            <a href="crm.html">🏠 CRM</a>
+            <a href="clientes.html" class="active">👥 Clientes</a>
+            <a href="leads.html">🎯 Leads</a>
+            <a href="proyectos.html">📋 Proyectos</a>
+            <a href="dashboard.html">📊 Contabilidad</a>
+        </nav>
+
+        <header class="header">
+            <h1>👥 Clientes</h1>
+            <button class="btn" onclick="openModal()">➕ Nuevo Cliente</button>
+        </header>
+
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="🔍 Buscar cliente..." oninput="filterClients()">
+        </div>
+
+        <div class="clients-grid" id="clientsGrid">
+            <div class="empty-state">
+                <div class="empty-state-icon">👥</div>
+                <p>Cargando clientes...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nuevo Cliente -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <h2 id="modalTitle">➕ Nuevo Cliente</h2>
+            <div id="statusMsg" class="status-msg"></div>
+            <form id="clientForm" onsubmit="saveClient(event)">
+                <input type="hidden" id="clientId" name="id">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nombre / Razón Social *</label>
+                        <input type="text" name="nombre" required>
+                    </div>
+                    <div class="form-group">
+                        <label>NIF/CIF</label>
+                        <input type="text" name="nif">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" name="email">
+                    </div>
+                    <div class="form-group">
+                        <label>Teléfono</label>
+                        <input type="tel" name="telefono">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Dirección</label>
+                    <input type="text" name="direccion">
+                </div>
+                <div class="form-group">
+                    <label>Estado</label>
+                    <select name="estado">
+                        <option value="ACTIVO">Activo</option>
+                        <option value="INACTIVO">Inactivo</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Notas</label>
+                    <textarea name="notas" placeholder="Observaciones..."></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn">💾 Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const SHEETS_ID = '1jd6ahi9HUk1HAPDO2jby9rvC2RXNtGG0EzAeY7ijOss';
+        const WEBHOOK = 'https://hooks.pracmatik.com/webhook/crm-cliente';
+        let allClients = [];
+
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.body.className = savedTheme;
+
+        async function fetchClients() {
+            try {
+                const res = await fetch(`https://docs.google.com/spreadsheets/d/${SHEETS_ID}/gviz/tq?tqx=out:json&sheet=Clientes`);
+                const text = await res.text();
+                const json = JSON.parse(text.substring(47, text.length - 2));
+                const cols = json.table.cols.map(c => c.label);
+                allClients = json.table.rows.map(r => {
+                    const obj = {};
+                    r.c.forEach((cell, i) => { obj[cols[i]] = cell ? (cell.v || '') : ''; });
+                    return obj;
+                }).filter(c => c.Nombre || c.ID_Cliente);
+                renderClients(allClients);
+            } catch (e) {
+                document.getElementById('clientsGrid').innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div><p>No hay clientes. ¡Crea el primero!</p></div>';
+            }
+        }
+
+        function renderClients(clients) {
+            const grid = document.getElementById('clientsGrid');
+            if (!clients.length) {
+                grid.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div><p>No hay clientes. ¡Crea el primero!</p></div>';
+                return;
+            }
+            grid.innerHTML = clients.map(c => `
+        <div class="client-card" onclick="viewClient('${c.ID_Cliente}')">
+          <div class="client-header">
+            <div class="client-name">${c.Nombre || 'Sin nombre'}</div>
+            <span class="client-badge ${(c.Estado || 'ACTIVO').toLowerCase()}">${c.Estado || 'ACTIVO'}</span>
+          </div>
+          <div class="client-info">📧 ${c.Email || 'Sin email'}</div>
+          <div class="client-info">📱 ${c.Telefono || 'Sin teléfono'}</div>
+          ${c.NIF ? `<div class="client-info">🏢 ${c.NIF}</div>` : ''}
+        </div>
+      `).join('');
+        }
+
+        function filterClients() {
+            const q = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allClients.filter(c =>
+                (c.Nombre || '').toLowerCase().includes(q) ||
+                (c.Email || '').toLowerCase().includes(q) ||
+                (c.NIF || '').toLowerCase().includes(q)
+            );
+            renderClients(filtered);
+        }
+
+        function openModal(client = null) {
+            document.getElementById('modal').classList.add('active');
+            document.getElementById('statusMsg').className = 'status-msg';
+            if (client) {
+                document.getElementById('modalTitle').textContent = '✏️ Editar Cliente';
+                document.getElementById('clientId').value = client.ID_Cliente;
+                document.querySelector('[name="nombre"]').value = client.Nombre || '';
+                document.querySelector('[name="nif"]').value = client.NIF || '';
+                document.querySelector('[name="email"]').value = client.Email || '';
+                document.querySelector('[name="telefono"]').value = client.Telefono || '';
+                document.querySelector('[name="direccion"]').value = client.Direccion || '';
+                document.querySelector('[name="estado"]').value = client.Estado || 'ACTIVO';
+                document.querySelector('[name="notas"]').value = client.Notas || '';
+            } else {
+                document.getElementById('modalTitle').textContent = '➕ Nuevo Cliente';
+                document.getElementById('clientForm').reset();
+                document.getElementById('clientId').value = '';
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+
+        function viewClient(id) {
+            const client = allClients.find(c => c.ID_Cliente === id);
+            if (client) openModal(client);
+        }
+
+        async function saveClient(e) {
+            e.preventDefault();
+            const form = e.target;
+            const btn = form.querySelector('[type="submit"]');
+            const statusMsg = document.getElementById('statusMsg');
+            btn.disabled = true;
+            btn.textContent = '⏳ Guardando...';
+
+            const data = {
+                id: document.getElementById('clientId').value,
+                nombre: form.nombre.value,
+                nif: form.nif.value,
+                email: form.email.value,
+                telefono: form.telefono.value,
+                direccion: form.direccion.value,
+                estado: form.estado.value,
+                notas: form.notas.value
+            };
+
+            try {
+                const res = await fetch(WEBHOOK, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                if (res.ok) {
+                    statusMsg.textContent = '✅ Cliente guardado correctamente';
+                    statusMsg.className = 'status-msg success';
+                    setTimeout(() => {
+                        closeModal();
+                        fetchClients();
+                    }, 1500);
+                } else throw new Error();
+            } catch {
+                statusMsg.textContent = '❌ Error al guardar. Verifica el webhook en n8n.';
+                statusMsg.className = 'status-msg error';
+            }
+            btn.disabled = false;
+            btn.textContent = '💾 Guardar';
+        }
+
+        if (location.hash === '#nuevo') openModal();
+        fetchClients();
+    </script>
+</body>
+
+</html>

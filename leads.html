@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 Leads - CRM Pracmatik</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --purple: #8b5cf6;
+        }
+
+        .dark {
+            --bg-main: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.9);
+            --bg-glass: rgba(255, 255, 255, 0.05);
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: rgba(148, 163, 184, 0.2);
+        }
+
+        .light {
+            --bg-main: #f1f5f9;
+            --bg-card: rgba(255, 255, 255, 0.95);
+            --bg-glass: rgba(0, 0, 0, 0.03);
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-main);
+            min-height: 100vh;
+            color: var(--text);
+        }
+
+        .bg-depth {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .bg-orb {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.25;
+            background: var(--warning);
+            top: -150px;
+            left: -100px;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translate(0, 0);
+            }
+
+            50% {
+                transform: translate(30px, -30px);
+            }
+        }
+
+        .light .bg-orb {
+            opacity: 0.1;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .nav a:hover {
+            background: var(--bg-glass);
+            color: var(--text);
+        }
+
+        .nav a.active {
+            background: var(--warning);
+            color: white;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 800;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            background: var(--warning);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Pipeline */
+        .pipeline {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 20px;
+        }
+
+        @media (max-width: 1000px) {
+            .pipeline {
+                grid-template-columns: repeat(3, minmax(200px, 1fr));
+            }
+        }
+
+        @media (max-width: 600px) {
+            .pipeline {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .pipeline-column {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .column-header {
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .column-title {
+            font-size: 14px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .column-count {
+            background: var(--bg-glass);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .column-body {
+            flex: 1;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-height: 300px;
+        }
+
+        .column-body.dragover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .lead-card {
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+            cursor: grab;
+            transition: all 0.2s;
+        }
+
+        .lead-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .lead-card.dragging {
+            opacity: 0.5;
+        }
+
+        .lead-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .lead-info {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .lead-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--success);
+            margin-top: 8px;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal h2 {
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            font-size: 14px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            outline: none;
+            font-family: inherit;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-actions .btn {
+            flex: 1;
+        }
+
+        .btn-secondary {
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .status-msg {
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            display: none;
+        }
+
+        .status-msg.success {
+            display: block;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .status-msg.error {
+            display: block;
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+    </style>
+</head>
+
+<body class="dark">
+    <div class="bg-depth">
+        <div class="bg-orb"></div>
+    </div>
+    <div class="container">
+        <nav class="nav">
+            <a href="crm.html">🏠 CRM</a>
+            <a href="clientes.html">👥 Clientes</a>
+            <a href="leads.html" class="active">🎯 Leads</a>
+            <a href="proyectos.html">📋 Proyectos</a>
+            <a href="dashboard.html">📊 Contabilidad</a>
+        </nav>
+
+        <header class="header">
+            <h1>🎯 Pipeline de Leads</h1>
+            <button class="btn" onclick="openModal()">➕ Nuevo Lead</button>
+        </header>
+
+        <div class="pipeline" id="pipeline"></div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <h2 id="modalTitle">➕ Nuevo Lead</h2>
+            <div id="statusMsg" class="status-msg"></div>
+            <form id="leadForm" onsubmit="saveLead(event)">
+                <input type="hidden" id="leadId" name="id">
+                <div class="form-group">
+                    <label>Nombre / Empresa *</label>
+                    <input type="text" name="nombre" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Contacto</label>
+                        <input type="text" name="contacto" placeholder="Email o teléfono">
+                    </div>
+                    <div class="form-group">
+                        <label>Valor Estimado</label>
+                        <input type="number" name="valor" placeholder="€">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Origen</label>
+                        <select name="origen">
+                            <option value="Web">Web</option>
+                            <option value="Referido">Referido</option>
+                            <option value="LinkedIn">LinkedIn</option>
+                            <option value="Email">Email</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Estado</label>
+                        <select name="estado">
+                            <option value="NUEVO">Nuevo</option>
+                            <option value="CONTACTADO">Contactado</option>
+                            <option value="PROPUESTA">Propuesta</option>
+                            <option value="NEGOCIANDO">Negociando</option>
+                            <option value="GANADO">Ganado</option>
+                            <option value="PERDIDO">Perdido</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Notas</label>
+                    <textarea name="notas" rows="3"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn">💾 Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const SHEETS_ID = '1jd6ahi9HUk1HAPDO2jby9rvC2RXNtGG0EzAeY7ijOss';
+        const WEBHOOK = 'https://hooks.pracmatik.com/webhook/crm-lead';
+        const STATES = ['NUEVO', 'CONTACTADO', 'PROPUESTA', 'NEGOCIANDO', 'GANADO', 'PERDIDO'];
+        const STATE_ICONS = { NUEVO: '🆕', CONTACTADO: '📞', PROPUESTA: '📝', NEGOCIANDO: '🤝', GANADO: '✅', PERDIDO: '❌' };
+        const STATE_COLORS = { NUEVO: '#3b82f6', CONTACTADO: '#8b5cf6', PROPUESTA: '#f59e0b', NEGOCIANDO: '#6366f1', GANADO: '#10b981', PERDIDO: '#ef4444' };
+        let allLeads = [];
+
+        document.body.className = localStorage.getItem('theme') || 'dark';
+
+        async function fetchLeads() {
+            try {
+                const res = await fetch(`https://docs.google.com/spreadsheets/d/${SHEETS_ID}/gviz/tq?tqx=out:json&sheet=Leads`);
+                const text = await res.text();
+                const json = JSON.parse(text.substring(47, text.length - 2));
+                const cols = json.table.cols.map(c => c.label);
+                allLeads = json.table.rows.map(r => {
+                    const obj = {};
+                    r.c.forEach((cell, i) => { obj[cols[i]] = cell ? (cell.v || '') : ''; });
+                    return obj;
+                }).filter(l => l.Nombre || l.ID_Lead);
+            } catch { allLeads = []; }
+            renderPipeline();
+        }
+
+        function renderPipeline() {
+            const pipeline = document.getElementById('pipeline');
+            pipeline.innerHTML = STATES.map(state => {
+                const leads = allLeads.filter(l => (l.Estado || 'NUEVO') === state);
+                return `
+          <div class="pipeline-column">
+            <div class="column-header">
+              <span class="column-title">${STATE_ICONS[state]} ${state}</span>
+              <span class="column-count">${leads.length}</span>
+            </div>
+            <div class="column-body" data-state="${state}" ondrop="drop(event)" ondragover="dragOver(event)" ondragleave="dragLeave(event)">
+              ${leads.map(l => `
+                <div class="lead-card" draggable="true" ondragstart="dragStart(event)" data-id="${l.ID_Lead}">
+                  <div class="lead-name">${l.Nombre}</div>
+                  <div class="lead-info">📧 ${l.Contacto || 'Sin contacto'}</div>
+                  <div class="lead-info">🏷️ ${l.Origen || 'Desconocido'}</div>
+                  ${l.Valor_Estimado ? `<div class="lead-value">💰 ${parseInt(l.Valor_Estimado).toLocaleString('es-ES')} €</div>` : ''}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+            }).join('');
+        }
+
+        let draggedId = null;
+        function dragStart(e) { draggedId = e.target.dataset.id; e.target.classList.add('dragging'); }
+        function dragOver(e) { e.preventDefault(); e.currentTarget.classList.add('dragover'); }
+        function dragLeave(e) { e.currentTarget.classList.remove('dragover'); }
+        async function drop(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('dragover');
+            const newState = e.currentTarget.dataset.state;
+            if (draggedId && newState) {
+                await fetch(WEBHOOK, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: draggedId, estado: newState, action: 'update_estado' })
+                });
+                fetchLeads();
+            }
+        }
+
+        function openModal(lead = null) {
+            document.getElementById('modal').classList.add('active');
+            document.getElementById('statusMsg').className = 'status-msg';
+            if (lead) {
+                document.getElementById('modalTitle').textContent = '✏️ Editar Lead';
+                document.getElementById('leadId').value = lead.ID_Lead;
+                document.querySelector('[name="nombre"]').value = lead.Nombre || '';
+                document.querySelector('[name="contacto"]').value = lead.Contacto || '';
+                document.querySelector('[name="valor"]').value = lead.Valor_Estimado || '';
+                document.querySelector('[name="origen"]').value = lead.Origen || 'Web';
+                document.querySelector('[name="estado"]').value = lead.Estado || 'NUEVO';
+                document.querySelector('[name="notas"]').value = lead.Notas || '';
+            } else {
+                document.getElementById('modalTitle').textContent = '➕ Nuevo Lead';
+                document.getElementById('leadForm').reset();
+                document.getElementById('leadId').value = '';
+            }
+        }
+        function closeModal() { document.getElementById('modal').classList.remove('active'); }
+
+        async function saveLead(e) {
+            e.preventDefault();
+            const form = e.target;
+            const btn = form.querySelector('[type="submit"]');
+            const statusMsg = document.getElementById('statusMsg');
+            btn.disabled = true;
+
+            const data = {
+                id: document.getElementById('leadId').value,
+                nombre: form.nombre.value,
+                contacto: form.contacto.value,
+                valor: form.valor.value,
+                origen: form.origen.value,
+                estado: form.estado.value,
+                notas: form.notas.value
+            };
+
+            try {
+                await fetch(WEBHOOK, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+                statusMsg.textContent = '✅ Lead guardado';
+                statusMsg.className = 'status-msg success';
+                setTimeout(() => { closeModal(); fetchLeads(); }, 1000);
+            } catch {
+                statusMsg.textContent = '❌ Error';
+                statusMsg.className = 'status-msg error';
+            }
+            btn.disabled = false;
+        }
+
+        if (location.hash === '#nuevo') openModal();
+        fetchLeads();
+    </script>
+</body>
+
+</html>
