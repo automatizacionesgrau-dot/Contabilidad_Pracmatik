@@ -486,7 +486,10 @@
     </div>
 
     <script>
-        const SHEETS_ID = '1jd6ahi9HUk1HAPDO2jby9rvC2RXNtGG0EzAeY7ijOss';
+        const SHEETS = {
+            proyectos: '1iUryR--UrLzW9SofHx9uaUbedATRZk-qC99xkErqCMU',
+            clientes: '1X-wjUgctzNOiDu7Y7pposZqctCGZQGxbACpYkYWyIRc'
+        };
         const WEBHOOK = 'https://hooks.pracmatik.com/webhook/crm-proyecto';
         const PHASES = ['INICIO', 'DESARROLLO', 'REVISION', 'ENTREGA', 'COMPLETADO'];
         const PHASE_INFO = {
@@ -503,8 +506,8 @@
         async function fetchData() {
             try {
                 const [projRes, cliRes] = await Promise.all([
-                    fetch(`https://docs.google.com/spreadsheets/d/${SHEETS_ID}/gviz/tq?tqx=out:json&sheet=Proyectos`),
-                    fetch(`https://docs.google.com/spreadsheets/d/${SHEETS_ID}/gviz/tq?tqx=out:json&sheet=Clientes`)
+                    fetch(`https://docs.google.com/spreadsheets/d/${SHEETS.proyectos}/gviz/tq?tqx=out:json&sheet=Hoja 1`),
+                    fetch(`https://docs.google.com/spreadsheets/d/${SHEETS.clientes}/gviz/tq?tqx=out:json&sheet=Hoja 1`)
                 ]);
                 const parseSheet = async (res) => {
                     const text = await res.text();

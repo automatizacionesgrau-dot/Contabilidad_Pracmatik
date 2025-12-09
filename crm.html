@@ -515,7 +515,12 @@
     </div>
 
     <script>
-        const SHEETS_ID = '1jd6ahi9HUk1HAPDO2jby9rvC2RXNtGG0EzAeY7ijOss';
+        const SHEETS = {
+            contabilidad: '1jd6ahi9HUk1HAPDO2jby9rvC2RXNtGG0EzAeY7ijOss',
+            clientes: '1X-wjUgctzNOiDu7Y7pposZqctCGZQGxbACpYkYWyIRc',
+            leads: '1FH7wmTbfwbs4UtFuOP_bxV7GQAJwHTp1jG-hc-_u93w',
+            proyectos: '1iUryR--UrLzW9SofHx9uaUbedATRZk-qC99xkErqCMU'
+        };
         const savedTheme = localStorage.getItem('theme') || 'dark';
         document.body.className = savedTheme;
         function toggleTheme() {
@@ -526,9 +531,9 @@
 
         const fmt = n => new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n);
 
-        async function fetchSheet(name) {
+        async function fetchSheet(sheetId, sheetName = 'Hoja 1') {
             try {
-                const res = await fetch(`https://docs.google.com/spreadsheets/d/${SHEETS_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(name)}`);
+                const res = await fetch(`https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`);
                 const text = await res.text();
                 const json = JSON.parse(text.substring(47, text.length - 2));
                 const cols = json.table.cols.map(c => c.label);
@@ -542,11 +547,11 @@
 
         async function loadData() {
             const [ingresos, gastos, clientes, leads, proyectos] = await Promise.all([
-                fetchSheet('Ingresos'),
-                fetchSheet('Gastos'),
-                fetchSheet('Clientes'),
-                fetchSheet('Leads'),
-                fetchSheet('Proyectos')
+                fetchSheet(SHEETS.contabilidad, 'Ingresos'),
+                fetchSheet(SHEETS.contabilidad, 'Gastos'),
+                fetchSheet(SHEETS.clientes),
+                fetchSheet(SHEETS.leads),
+                fetchSheet(SHEETS.proyectos)
             ]);
 
             const totalIngresos = ingresos.reduce((s, r) => s + (parseFloat(r.Base_Imponible) || 0), 0);
