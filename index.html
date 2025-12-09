@@ -11,7 +11,6 @@
         :root {
             --primary: #6366f1;
             --primary-light: #818cf8;
-            --primary-dark: #4f46e5;
             --success: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
@@ -49,19 +48,6 @@
         .header {
             text-align: center;
             margin-bottom: 30px;
-            animation: fadeIn 0.6s ease;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         .logo {
@@ -90,22 +76,8 @@
             border-radius: 24px;
             padding: 30px;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            animation: slideUp 0.5s ease;
         }
 
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Tabs */
         .tabs {
             display: flex;
             gap: 8px;
@@ -113,12 +85,10 @@
             background: var(--glass);
             padding: 6px;
             border-radius: 16px;
-            overflow-x: auto;
         }
 
         .tab {
             flex: 1;
-            min-width: 100px;
             padding: 14px 20px;
             border: none;
             background: transparent;
@@ -141,39 +111,32 @@
         }
 
         .tab.active {
-            background: var(--primary);
             color: white;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
 
         .tab.active.ingreso {
             background: var(--success);
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
         }
 
         .tab.active.gasto {
             background: var(--danger);
-            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
         }
 
         .tab.active.compra {
             background: var(--warning);
-            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
         }
 
         .tab.active.pago {
             background: var(--info);
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
         }
 
         .tab-icon {
             font-size: 20px;
         }
 
-        /* Form panels */
         .panel {
             display: none;
-            animation: fadeIn 0.3s ease;
         }
 
         .panel.active {
@@ -197,10 +160,6 @@
             margin-bottom: 15px;
         }
 
-        .form-group.full {
-            grid-column: 1 / -1;
-        }
-
         label {
             display: block;
             font-size: 12px;
@@ -208,7 +167,6 @@
             color: var(--text-muted);
             margin-bottom: 6px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
         label .required {
@@ -216,8 +174,7 @@
         }
 
         input,
-        select,
-        textarea {
+        select {
             width: 100%;
             padding: 14px 16px;
             font-size: 15px;
@@ -231,11 +188,9 @@
         }
 
         input:focus,
-        select:focus,
-        textarea:focus {
+        select:focus {
             border-color: var(--primary);
             background: rgba(99, 102, 241, 0.1);
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
         }
 
         input::placeholder {
@@ -282,10 +237,6 @@
             border-radius: 14px;
             cursor: pointer;
             transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
         }
 
         .submit-btn.ingreso {
@@ -315,23 +266,6 @@
             transform: none;
         }
 
-        .submit-btn.loading::after {
-            content: "";
-            width: 18px;
-            height: 18px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* Modal */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -377,9 +311,6 @@
             justify-content: center;
             margin: 0 auto 20px;
             font-size: 40px;
-        }
-
-        .modal-icon.success {
             background: linear-gradient(135deg, #10b981, #059669);
         }
 
@@ -392,6 +323,7 @@
         .modal .subtitle {
             text-align: center;
             margin-bottom: 25px;
+            color: var(--text-muted);
         }
 
         .result-grid {
@@ -451,7 +383,6 @@
             border: 1px solid var(--border);
             border-radius: 12px;
             cursor: pointer;
-            transition: all 0.2s ease;
         }
 
         .close-btn:hover {
@@ -471,25 +402,6 @@
 
         .error-msg.show {
             display: block;
-            animation: shake 0.5s ease;
-        }
-
-        @keyframes shake {
-
-            0%,
-            100% {
-                transform: translateX(0);
-            }
-
-            20%,
-            60% {
-                transform: translateX(-5px);
-            }
-
-            40%,
-            80% {
-                transform: translateX(5px);
-            }
         }
 
         .dashboard-link {
@@ -499,7 +411,6 @@
             color: var(--primary-light);
             text-decoration: none;
             font-weight: 500;
-            transition: color 0.2s;
         }
 
         .dashboard-link:hover {
@@ -519,20 +430,16 @@
         <div class="card">
             <div class="tabs">
                 <button class="tab active ingreso" data-panel="ingreso" onclick="switchTab(this)">
-                    <span class="tab-icon">📈</span>
-                    <span>Ingresos</span>
+                    <span class="tab-icon">📈</span><span>Ingresos</span>
                 </button>
                 <button class="tab gasto" data-panel="gasto" onclick="switchTab(this)">
-                    <span class="tab-icon">📉</span>
-                    <span>Gastos</span>
+                    <span class="tab-icon">📉</span><span>Gastos</span>
                 </button>
                 <button class="tab compra" data-panel="compra" onclick="switchTab(this)">
-                    <span class="tab-icon">🛒</span>
-                    <span>Compras</span>
+                    <span class="tab-icon">🛒</span><span>Compras</span>
                 </button>
                 <button class="tab pago" data-panel="pago" onclick="switchTab(this)">
-                    <span class="tab-icon">💳</span>
-                    <span>Pagos</span>
+                    <span class="tab-icon">💳</span><span>Pagos</span>
                 </button>
             </div>
 
@@ -579,18 +486,25 @@
                             </select>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label>Retención IRPF</label>
-                        <select name="irpf_pct">
-                            <option value="0">0% Sin retención</option>
-                            <option value="7">7% Nuevos autónomos</option>
-                            <option value="15" selected>15% General</option>
-                            <option value="19">19% Alquileres</option>
-                        </select>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Retención IRPF</label>
+                            <select name="irpf_pct">
+                                <option value="0">0% Sin retención</option>
+                                <option value="7">7% Nuevos autónomos</option>
+                                <option value="15" selected>15% General</option>
+                                <option value="19">19% Alquileres</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Estado</label>
+                            <select name="estado_pago">
+                                <option value="PENDIENTE">Pendiente</option>
+                                <option value="COBRADO">Cobrado</option>
+                            </select>
+                        </div>
                     </div>
-                    <button type="submit" class="submit-btn ingreso">
-                        <span>💾</span> Registrar Ingreso
-                    </button>
+                    <button type="submit" class="submit-btn ingreso">💾 Registrar Ingreso</button>
                 </form>
             </div>
 
@@ -613,21 +527,9 @@
                             <input type="text" name="nif" placeholder="B12345678">
                         </div>
                         <div class="form-group">
-                            <label>Categoría</label>
-                            <select name="categoria">
-                                <option value="SUMINISTROS">Suministros (luz, agua, gas)</option>
-                                <option value="TELEFONIA">Telefonía e Internet</option>
-                                <option value="MATERIAL">Material de oficina</option>
-                                <option value="SOFTWARE">Software y suscripciones</option>
-                                <option value="SERVICIOS">Servicios profesionales</option>
-                                <option value="ALQUILER">Alquiler local/oficina</option>
-                                <option value="GENERAL" selected>Otros gastos</option>
-                            </select>
+                            <label>Concepto <span class="required">*</span></label>
+                            <input type="text" name="concepto" placeholder="Descripción del gasto" required>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Concepto <span class="required">*</span></label>
-                        <input type="text" name="concepto" placeholder="Descripción del gasto" required>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
@@ -647,9 +549,14 @@
                             </select>
                         </div>
                     </div>
-                    <button type="submit" class="submit-btn gasto">
-                        <span>💾</span> Registrar Gasto
-                    </button>
+                    <div class="form-group">
+                        <label>Estado</label>
+                        <select name="estado_pago">
+                            <option value="PENDIENTE">Pendiente</option>
+                            <option value="PAGADO">Pagado</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="submit-btn gasto">💾 Registrar Gasto</button>
                 </form>
             </div>
 
@@ -668,20 +575,12 @@
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Producto <span class="required">*</span></label>
-                            <input type="text" name="producto" placeholder="Descripción del producto" required>
+                            <label>NIF/CIF</label>
+                            <input type="text" name="nif" placeholder="B12345678">
                         </div>
                         <div class="form-group">
-                            <label>Categoría</label>
-                            <select name="categoria">
-                                <option value="MATERIAL">Material de oficina</option>
-                                <option value="SOFTWARE">Software/Licencias</option>
-                                <option value="HARDWARE">Hardware/Equipos</option>
-                                <option value="MOBILIARIO">Mobiliario</option>
-                                <option value="TRANSPORTE">Transporte</option>
-                                <option value="COMBUSTIBLE">Combustible</option>
-                                <option value="GENERAL" selected>Otros</option>
-                            </select>
+                            <label>Producto <span class="required">*</span></label>
+                            <input type="text" name="concepto" placeholder="Descripción del producto" required>
                         </div>
                     </div>
                     <div class="form-row">
@@ -702,9 +601,7 @@
                             </select>
                         </div>
                     </div>
-                    <button type="submit" class="submit-btn compra">
-                        <span>💾</span> Registrar Compra
-                    </button>
+                    <button type="submit" class="submit-btn compra">💾 Registrar Compra</button>
                 </form>
             </div>
 
@@ -723,19 +620,12 @@
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Concepto <span class="required">*</span></label>
-                            <input type="text" name="concepto" placeholder="Motivo del pago" required>
+                            <label>NIF/CIF</label>
+                            <input type="text" name="nif" placeholder="B12345678">
                         </div>
                         <div class="form-group">
-                            <label>Categoría</label>
-                            <select name="categoria">
-                                <option value="SEGUROS">Seguros</option>
-                                <option value="CUOTAS">Cuotas/Suscripciones</option>
-                                <option value="IMPUESTOS">Impuestos</option>
-                                <option value="NOMINAS">Nóminas</option>
-                                <option value="AUTONOMO">Cuota Autónomo</option>
-                                <option value="GENERAL" selected>Otros</option>
-                            </select>
+                            <label>Concepto <span class="required">*</span></label>
+                            <input type="text" name="concepto" placeholder="Motivo del pago" required>
                         </div>
                     </div>
                     <div class="form-row">
@@ -747,16 +637,14 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label>¿Deducible?</label>
-                            <select name="deducible">
-                                <option value="true" selected>Sí, deducible</option>
-                                <option value="false">No deducible</option>
+                            <label>Estado</label>
+                            <select name="estado_pago">
+                                <option value="PAGADO" selected>Pagado</option>
+                                <option value="PENDIENTE">Pendiente</option>
                             </select>
                         </div>
                     </div>
-                    <button type="submit" class="submit-btn pago">
-                        <span>💾</span> Registrar Pago
-                    </button>
+                    <button type="submit" class="submit-btn pago">💾 Registrar Pago</button>
                 </form>
             </div>
         </div>
@@ -767,7 +655,7 @@
     <!-- Modal -->
     <div class="modal-overlay" id="resultModal">
         <div class="modal">
-            <div class="modal-icon success">✓</div>
+            <div class="modal-icon">✓</div>
             <h2>Registro Guardado</h2>
             <p class="subtitle">Sistema Contable Pracmatik</p>
             <div id="resultContent" class="result-grid"></div>
@@ -778,38 +666,28 @@
     <script>
         const WEBHOOK_URL = 'https://hooks.pracmatik.com/webhook/contabilidad-pragmatik';
 
-        // Set today's date on all date inputs
         document.querySelectorAll('input[type="date"]').forEach(input => {
             input.valueAsDate = new Date();
         });
 
         function switchTab(tab) {
-            const panelId = tab.dataset.panel;
-
-            // Update tabs
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
-
-            // Update panels
             document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-            document.getElementById('panel-' + panelId).classList.add('active');
-
-            // Clear error
+            document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
             document.getElementById('errorMsg').classList.remove('show');
         }
 
         async function submitForm(event, tipo) {
             event.preventDefault();
-
             const form = event.target;
             const btn = form.querySelector('.submit-btn');
             const errorDiv = document.getElementById('errorMsg');
 
             errorDiv.classList.remove('show');
             btn.disabled = true;
-            btn.classList.add('loading');
             const originalText = btn.innerHTML;
-            btn.innerHTML = '<span>Procesando...</span>';
+            btn.innerHTML = 'Procesando...';
 
             const formData = new FormData(form);
             const data = {
@@ -817,13 +695,11 @@
                 fecha: formData.get('fecha'),
                 tercero: formData.get('tercero'),
                 nif: formData.get('nif') || '',
-                concepto: formData.get('concepto') || formData.get('producto') || '',
-                producto: formData.get('producto') || '',
-                categoria: formData.get('categoria') || 'GENERAL',
+                concepto: formData.get('concepto') || '',
                 base: parseFloat(formData.get('base')) || 0,
                 iva_pct: parseInt(formData.get('iva_pct')) || 0,
                 irpf_pct: parseInt(formData.get('irpf_pct')) || 0,
-                deducible: formData.get('deducible') !== 'false'
+                estado_pago: formData.get('estado_pago') || 'PENDIENTE'
             };
 
             try {
@@ -834,7 +710,6 @@
                 });
 
                 if (!response.ok) throw new Error('Error del servidor');
-
                 const result = await response.json();
 
                 if (result.success) {
@@ -846,24 +721,20 @@
                 } else {
                     throw new Error(result.message || 'Error desconocido');
                 }
-
             } catch (error) {
                 errorDiv.textContent = '❌ ' + error.message;
                 errorDiv.classList.add('show');
             } finally {
                 btn.disabled = false;
-                btn.classList.remove('loading');
                 btn.innerHTML = originalText;
             }
         }
 
         function showResult(data) {
-            const content = document.getElementById('resultContent');
-
-            content.innerHTML = `
+            document.getElementById('resultContent').innerHTML = `
         <div class="result-item">
           <div class="result-label">ID</div>
-          <div class="result-value">${data.ID}</div>
+          <div class="result-value">${data.ID_Unico}</div>
         </div>
         <div class="result-item">
           <div class="result-label">Trimestre</div>
@@ -871,7 +742,7 @@
         </div>
         <div class="result-item">
           <div class="result-label">Base</div>
-          <div class="result-value">${data.Base.toFixed(2)} €</div>
+          <div class="result-value">${data.Base_Imponible.toFixed(2)} €</div>
         </div>
         <div class="result-item">
           <div class="result-label">IVA (${data.IVA_Porcentaje}%)</div>
@@ -881,14 +752,12 @@
         <div class="result-item">
           <div class="result-label">IRPF (${data.IRPF_Porcentaje}%)</div>
           <div class="result-value">-${data.IRPF_Cuota.toFixed(2)} €</div>
-        </div>
-        ` : ''}
+        </div>` : ''}
         <div class="result-item full">
-          <div class="result-label">Total</div>
-          <div class="result-value highlight">${data.Total.toFixed(2)} €</div>
+          <div class="result-label">Total Factura</div>
+          <div class="result-value highlight">${data.Total_Factura.toFixed(2)} €</div>
         </div>
       `;
-
             document.getElementById('resultModal').classList.add('active');
         }
 
