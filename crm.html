@@ -8,6 +8,7 @@
     <title>🚀 CRM Pracmatik</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --primary: #6366f1;
@@ -52,17 +53,19 @@
             transition: background 0.4s, color 0.4s;
         }
 
+        /* Background */
         .bg-depth {
             position: fixed;
             inset: 0;
             pointer-events: none;
             z-index: 0;
+            overflow: hidden;
         }
 
         .bg-orb {
             position: absolute;
             border-radius: 50%;
-            filter: blur(100px);
+            filter: blur(120px);
             opacity: 0.3;
             animation: float 25s ease-in-out infinite;
         }
@@ -87,8 +90,8 @@
         .bg-orb.o3 {
             width: 400px;
             height: 400px;
-            background: var(--purple);
-            top: 40%;
+            background: var(--pink);
+            top: 50%;
             left: 60%;
             animation-delay: -16s;
         }
@@ -116,7 +119,7 @@
         .container {
             position: relative;
             z-index: 1;
-            max-width: 1400px;
+            max-width: 1500px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -126,7 +129,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             flex-wrap: wrap;
             gap: 15px;
             animation: slideDown 0.5s ease;
@@ -139,17 +142,19 @@
             }
         }
 
-        .header h1 {
+        .header-left h1 {
             font-size: clamp(24px, 5vw, 32px);
             font-weight: 800;
             background: linear-gradient(135deg, var(--primary-light), var(--pink));
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        .header-sub {
+        .header-left p {
             color: var(--text-muted);
             font-size: 14px;
+            margin-top: 4px;
         }
 
         .header-actions {
@@ -183,12 +188,35 @@
             left: calc(100% - 20px);
         }
 
-        /* KPI Row */
-        .kpi-row {
+        .refresh-btn {
+            padding: 8px 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .refresh-btn:hover {
+            opacity: 0.9;
+        }
+
+        .refresh-btn.loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        /* KPI Grid */
+        .kpi-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
             gap: 15px;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
         .kpi-card {
@@ -196,8 +224,10 @@
             backdrop-filter: blur(20px);
             border: 1px solid var(--border);
             border-radius: 16px;
-            padding: 20px;
-            animation: fadeUp 0.5s ease calc(var(--i, 0) * 0.1s) both;
+            padding: 18px;
+            animation: fadeUp 0.5s ease calc(var(--i, 0) * 0.05s) both;
+            position: relative;
+            overflow: hidden;
         }
 
         @keyframes fadeUp {
@@ -207,122 +237,272 @@
             }
         }
 
-        .kpi-icon {
-            font-size: 28px;
-            margin-bottom: 10px;
-        }
-
-        .kpi-value {
-            font-size: 28px;
-            font-weight: 800;
-            margin-bottom: 4px;
-        }
-
-        .kpi-label {
-            font-size: 12px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-        }
-
-        /* Section Cards */
-        .sections-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .section-card {
-            background: var(--bg-card);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 25px;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-decoration: none;
-            color: var(--text);
-            animation: fadeUp 0.5s ease calc(0.3s + var(--i, 0) * 0.1s) both;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .section-card::before {
+        .kpi-card::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
-            background: var(--accent, var(--primary));
+            height: 3px;
+            background: var(--kpi-color, var(--primary));
         }
 
-        .section-card:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-        }
-
-        .section-icon {
-            font-size: 40px;
-            margin-bottom: 15px;
-        }
-
-        .section-title {
-            font-size: 20px;
-            font-weight: 700;
+        .kpi-icon {
+            font-size: 24px;
             margin-bottom: 8px;
         }
 
-        .section-desc {
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-bottom: 15px;
-            line-height: 1.5;
+        .kpi-value {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 2px;
         }
 
-        .section-stats {
+        .kpi-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .kpi-trend {
+            font-size: 11px;
+            margin-top: 6px;
             display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .kpi-trend.up {
+            color: var(--success);
+        }
+
+        .kpi-trend.down {
+            color: var(--danger);
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
             gap: 20px;
         }
 
-        .section-stat {
-            text-align: center;
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
-        .section-stat-value {
-            font-size: 22px;
-            font-weight: 700;
-        }
-
-        .section-stat-label {
-            font-size: 11px;
-            color: var(--text-muted);
-        }
-
-        /* Quick Actions */
-        .quick-actions {
+        /* Cards */
+        .card {
             background: var(--bg-card);
             backdrop-filter: blur(20px);
             border: 1px solid var(--border);
             border-radius: 20px;
-            padding: 25px;
-            animation: fadeUp 0.5s ease 0.6s both;
+            padding: 20px;
+            animation: fadeUp 0.5s ease 0.2s both;
         }
 
-        .quick-title {
-            font-size: 16px;
-            font-weight: 700;
+        .card.span-8 {
+            grid-column: span 8;
+        }
+
+        .card.span-4 {
+            grid-column: span 4;
+        }
+
+        .card.span-6 {
+            grid-column: span 6;
+        }
+
+        .card.span-12 {
+            grid-column: span 12;
+        }
+
+        @media (max-width: 1200px) {
+
+            .card.span-8,
+            .card.span-4,
+            .card.span-6,
+            .card.span-12 {
+                grid-column: span 1;
+            }
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 15px;
         }
 
-        .quick-grid {
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-link {
+            font-size: 12px;
+            color: var(--primary-light);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .card-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Mini Lists */
+        .mini-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .mini-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: var(--bg-glass);
+            border-radius: 12px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .mini-item:hover {
+            background: rgba(99, 102, 241, 0.1);
+            transform: translateX(4px);
+        }
+
+        .mini-item-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .mini-item-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .mini-item-icon.green {
+            background: rgba(16, 185, 129, 0.2);
+        }
+
+        .mini-item-icon.blue {
+            background: rgba(59, 130, 246, 0.2);
+        }
+
+        .mini-item-icon.orange {
+            background: rgba(245, 158, 11, 0.2);
+        }
+
+        .mini-item-icon.purple {
+            background: rgba(139, 92, 246, 0.2);
+        }
+
+        .mini-item-icon.pink {
+            background: rgba(236, 72, 153, 0.2);
+        }
+
+        .mini-item-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .mini-item-sub {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .mini-item-right {
+            text-align: right;
+        }
+
+        .mini-item-value {
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .mini-item-badge {
+            padding: 3px 8px;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .badge-hot {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .badge-warm {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+
+        .badge-cold {
+            background: rgba(148, 163, 184, 0.2);
+            color: var(--text-muted);
+        }
+
+        .badge-new {
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--info);
+        }
+
+        /* Progress Bars */
+        .progress-item {
+            margin-bottom: 12px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 12px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--bg-main);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            height: 200px;
+            position: relative;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 12px;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
         }
 
         .quick-btn {
-            padding: 15px;
+            padding: 15px 10px;
             background: var(--bg-glass);
             border: 1px solid var(--border);
             border-radius: 12px;
@@ -340,13 +520,38 @@
         }
 
         .quick-btn-icon {
-            font-size: 24px;
+            font-size: 22px;
             margin-bottom: 6px;
         }
 
         .quick-btn-text {
-            font-size: 13px;
+            font-size: 11px;
             font-weight: 600;
+        }
+
+        /* Loading */
+        .loading-text {
+            color: var(--text-muted);
+            font-size: 13px;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, var(--bg-glass) 25%, rgba(255, 255, 255, 0.1) 50%, var(--bg-glass) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 8px;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
         }
 
         /* Responsive */
@@ -355,17 +560,12 @@
                 padding: 15px;
             }
 
-            .header {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .kpi-row {
+            .kpi-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
 
-            .sections-grid {
-                grid-template-columns: 1fr;
+            .kpi-value {
+                font-size: 22px;
             }
         }
     </style>
@@ -379,148 +579,143 @@
     </div>
 
     <div class="container">
+        <!-- Header -->
         <header class="header">
-            <div>
+            <div class="header-left">
                 <h1>🚀 CRM Pracmatik</h1>
-                <p class="header-sub">Gestión integral de clientes y proyectos</p>
+                <p id="lastUpdate">Cargando datos...</p>
             </div>
             <div class="header-actions">
+                <button class="refresh-btn" id="refreshBtn" onclick="loadAllData()">🔄 Actualizar</button>
                 <button class="theme-toggle" onclick="toggleTheme()"></button>
             </div>
         </header>
 
         <!-- KPIs -->
-        <div class="kpi-row">
-            <div class="kpi-card" style="--i:0">
+        <div class="kpi-grid">
+            <div class="kpi-card" style="--i:0; --kpi-color: var(--success);">
+                <div class="kpi-icon">💰</div>
+                <div class="kpi-value" id="kpiIngresos">-</div>
+                <div class="kpi-label">Ingresos</div>
+                <div class="kpi-trend up" id="kpiIngresosTrend"></div>
+            </div>
+            <div class="kpi-card" style="--i:1; --kpi-color: var(--danger);">
+                <div class="kpi-icon">📉</div>
+                <div class="kpi-value" id="kpiGastos">-</div>
+                <div class="kpi-label">Gastos</div>
+            </div>
+            <div class="kpi-card" style="--i:2; --kpi-color: var(--info);">
                 <div class="kpi-icon">👥</div>
                 <div class="kpi-value" id="kpiClientes">-</div>
-                <div class="kpi-label">Clientes Activos</div>
+                <div class="kpi-label">Clientes</div>
             </div>
-            <div class="kpi-card" style="--i:1">
+            <div class="kpi-card" style="--i:3; --kpi-color: var(--warning);">
                 <div class="kpi-icon">🎯</div>
                 <div class="kpi-value" id="kpiLeads">-</div>
-                <div class="kpi-label">Leads Abiertos</div>
+                <div class="kpi-label">Leads Activos</div>
             </div>
-            <div class="kpi-card" style="--i:2">
+            <div class="kpi-card" style="--i:4; --kpi-color: var(--purple);">
                 <div class="kpi-icon">📋</div>
                 <div class="kpi-value" id="kpiProyectos">-</div>
-                <div class="kpi-label">Proyectos Activos</div>
+                <div class="kpi-label">Proyectos</div>
             </div>
-            <div class="kpi-card" style="--i:3">
-                <div class="kpi-icon">💰</div>
-                <div class="kpi-value" id="kpiFacturacion">-</div>
-                <div class="kpi-label">Facturación Año</div>
+            <div class="kpi-card" style="--i:5; --kpi-color: var(--pink);">
+                <div class="kpi-icon">🔥</div>
+                <div class="kpi-value" id="kpiHotLeads">-</div>
+                <div class="kpi-label">Leads Calientes</div>
             </div>
         </div>
 
-        <!-- Sections -->
-        <div class="sections-grid">
-            <a href="clientes.html" class="section-card" style="--i:0; --accent: #10b981;">
-                <div class="section-icon">👥</div>
-                <div class="section-title">Clientes</div>
-                <div class="section-desc">Gestiona tu cartera de clientes, proyectos vinculados y documentación.</div>
-                <div class="section-stats">
-                    <div class="section-stat">
-                        <div class="section-stat-value" id="statClientes">-</div>
-                        <div class="section-stat-label">Total</div>
-                    </div>
-                    <div class="section-stat">
-                        <div class="section-stat-value" id="statClientesActivos">-</div>
-                        <div class="section-stat-label">Activos</div>
-                    </div>
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Gráfico Ingresos/Gastos -->
+            <div class="card span-8">
+                <div class="card-header">
+                    <span class="card-title">📊 Evolución Financiera</span>
+                    <a href="dashboard.html" class="card-link">Ver más →</a>
                 </div>
-            </a>
+                <div class="chart-container"><canvas id="chartFinanciero"></canvas></div>
+            </div>
 
-            <a href="leads.html" class="section-card" style="--i:1; --accent: #f59e0b;">
-                <div class="section-icon">🎯</div>
-                <div class="section-title">Leads</div>
-                <div class="section-desc">Pipeline de ventas con seguimiento de potenciales clientes.</div>
-                <div class="section-stats">
-                    <div class="section-stat">
-                        <div class="section-stat-value" id="statLeads">-</div>
-                        <div class="section-stat-label">Total</div>
-                    </div>
-                    <div class="section-stat">
-                        <div class="section-stat-value" id="statLeadsNuevos">-</div>
-                        <div class="section-stat-label">Nuevos</div>
-                    </div>
+            <!-- Proyectos por Fase -->
+            <div class="card span-4">
+                <div class="card-header">
+                    <span class="card-title">📋 Proyectos por Fase</span>
+                    <a href="proyectos.html" class="card-link">Ver Kanban →</a>
                 </div>
-            </a>
-
-            <a href="proyectos.html" class="section-card" style="--i:2; --accent: #6366f1;">
-                <div class="section-icon">📋</div>
-                <div class="section-title">Proyectos</div>
-                <div class="section-desc">Tablero Kanban para gestionar proyectos por fases.</div>
-                <div class="section-stats">
-                    <div class="section-stat">
-                        <div class="section-stat-value" id="statProyectos">-</div>
-                        <div class="section-stat-label">Activos</div>
-                    </div>
-                    <div class="section-stat">
-                        <div class="section-stat-value" id="statProyectosValor">-</div>
-                        <div class="section-stat-label">Valor</div>
-                    </div>
+                <div id="proyectosFases">
+                    <div class="loading-text">Cargando...</div>
                 </div>
-            </a>
+            </div>
 
-            <a href="dashboard.html" class="section-card" style="--i:3; --accent: #ec4899;">
-                <div class="section-icon">📊</div>
-                <div class="section-title">Contabilidad</div>
-                <div class="section-desc">Control de ingresos, gastos, IVA e IRPF trimestral.</div>
-                <div class="section-stats">
-                    <div class="section-stat">
-                        <div class="section-stat-value" id="statIngresos">-</div>
-                        <div class="section-stat-label">Ingresos</div>
-                    </div>
-                    <div class="section-stat">
-                        <div class="section-stat-value" id="statGastos">-</div>
-                        <div class="section-stat-label">Gastos</div>
-                    </div>
+            <!-- Leads Recientes -->
+            <div class="card span-6">
+                <div class="card-header">
+                    <span class="card-title">🎯 Leads Recientes</span>
+                    <a href="leads.html" class="card-link">Ver pipeline →</a>
                 </div>
-            </a>
-        </div>
+                <div class="mini-list" id="leadsRecientes">
+                    <div class="loading-text">Cargando...</div>
+                </div>
+            </div>
 
-        <!-- Quick Actions -->
-        <div class="quick-actions">
-            <h3 class="quick-title">⚡ Acciones Rápidas</h3>
-            <div class="quick-grid">
-                <a href="index.html" class="quick-btn">
-                    <div class="quick-btn-icon">📝</div>
-                    <div class="quick-btn-text">Nueva Factura</div>
-                </a>
-                <a href="clientes.html#nuevo" class="quick-btn">
-                    <div class="quick-btn-icon">👤</div>
-                    <div class="quick-btn-text">Nuevo Cliente</div>
-                </a>
-                <a href="leads.html#nuevo" class="quick-btn">
-                    <div class="quick-btn-icon">🎯</div>
-                    <div class="quick-btn-text">Nuevo Lead</div>
-                </a>
-                <a href="proyectos.html#nuevo" class="quick-btn">
-                    <div class="quick-btn-icon">📋</div>
-                    <div class="quick-btn-text">Nuevo Proyecto</div>
-                </a>
-                <a href="https://docs.google.com/spreadsheets/d/1jd6ahi9HUk1HAPDO2jby9rvC2RXNtGG0EzAeY7ijOss/edit"
-                    target="_blank" class="quick-btn">
-                    <div class="quick-btn-icon">📊</div>
-                    <div class="quick-btn-text">Google Sheets</div>
-                </a>
-                <a href="https://drive.google.com/drive/u/1/folders/1lpnoCm43Nw3yz4En_sa9ZSDC1vCH4e80" target="_blank"
-                    class="quick-btn">
-                    <div class="quick-btn-icon">📁</div>
-                    <div class="quick-btn-text">Google Drive</div>
-                </a>
+            <!-- Email Outreach -->
+            <div class="card span-6">
+                <div class="card-header">
+                    <span class="card-title">📧 Email Outreach</span>
+                    <a href="comercial.html" class="card-link">Ver comercial →</a>
+                </div>
+                <div class="mini-list" id="emailOutreach">
+                    <div class="loading-text">Cargando...</div>
+                </div>
+            </div>
+
+            <!-- Acciones Rápidas -->
+            <div class="card span-12">
+                <div class="card-header">
+                    <span class="card-title">⚡ Acciones Rápidas</span>
+                </div>
+                <div class="quick-actions">
+                    <a href="index.html" class="quick-btn">
+                        <div class="quick-btn-icon">📝</div>
+                        <div class="quick-btn-text">Nueva Factura</div>
+                    </a>
+                    <a href="clientes.html#nuevo" class="quick-btn">
+                        <div class="quick-btn-icon">👤</div>
+                        <div class="quick-btn-text">Nuevo Cliente</div>
+                    </a>
+                    <a href="leads.html#nuevo" class="quick-btn">
+                        <div class="quick-btn-icon">🎯</div>
+                        <div class="quick-btn-text">Nuevo Lead</div>
+                    </a>
+                    <a href="proyectos.html#nuevo" class="quick-btn">
+                        <div class="quick-btn-icon">📋</div>
+                        <div class="quick-btn-text">Nuevo Proyecto</div>
+                    </a>
+                    <a href="comercial.html" class="quick-btn">
+                        <div class="quick-btn-icon">📧</div>
+                        <div class="quick-btn-text">Email Tracking</div>
+                    </a>
+                    <a href="dashboard.html" class="quick-btn">
+                        <div class="quick-btn-icon">📊</div>
+                        <div class="quick-btn-text">Contabilidad</div>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
+        // Config
         const SHEETS = {
             contabilidad: '1jd6ahi9HUk1HAPDO2jby9rvC2RXNtGG0EzAeY7ijOss',
             clientes: '1X-wjUgctzNOiDu7Y7pposZqctCGZQGxbACpYkYWyIRc',
             leads: '1FH7wmTbfwbs4UtFuOP_bxV7GQAJwHTp1jG-hc-_u93w',
             proyectos: '1iUryR--UrLzW9SofHx9uaUbedATRZk-qC99xkErqCMU'
         };
+        const WEBHOOK_EMAIL = 'https://hooks.pracmatik.com/webhook/email-tracking';
+
+        // Theme
         const savedTheme = localStorage.getItem('theme') || 'dark';
         document.body.className = savedTheme;
         function toggleTheme() {
@@ -529,6 +724,7 @@
             localStorage.setItem('theme', t);
         }
 
+        // Helpers
         const fmt = n => new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n);
 
         async function fetchSheet(sheetId, sheetName = 'Hoja 1') {
@@ -536,48 +732,215 @@
                 const res = await fetch(`https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`);
                 const text = await res.text();
                 const json = JSON.parse(text.substring(47, text.length - 2));
-                const cols = json.table.cols.map(c => c.label);
+                const cols = json.table.cols.map(c => c.label || '');
                 return json.table.rows.map(r => {
                     const obj = {};
-                    r.c.forEach((cell, i) => { obj[cols[i]] = cell ? (cell.v || '') : ''; });
+                    r.c.forEach((cell, i) => { if (cols[i]) obj[cols[i]] = cell ? (cell.v ?? '') : ''; });
                     return obj;
                 });
-            } catch { return []; }
+            } catch (e) { console.error('Error fetching sheet:', e); return []; }
         }
 
-        async function loadData() {
-            const [ingresos, gastos, clientes, leads, proyectos] = await Promise.all([
-                fetchSheet(SHEETS.contabilidad, 'Ingresos'),
-                fetchSheet(SHEETS.contabilidad, 'Gastos'),
-                fetchSheet(SHEETS.clientes),
-                fetchSheet(SHEETS.leads),
-                fetchSheet(SHEETS.proyectos)
-            ]);
-
-            const totalIngresos = ingresos.reduce((s, r) => s + (parseFloat(r.Base_Imponible) || 0), 0);
-            const totalGastos = gastos.reduce((s, r) => s + (parseFloat(r.Base_Imponible) || 0), 0);
-            const clientesActivos = clientes.filter(c => c.Estado === 'ACTIVO').length;
-            const leadsAbiertos = leads.filter(l => !['GANADO', 'PERDIDO'].includes(l.Estado)).length;
-            const leadsNuevos = leads.filter(l => l.Estado === 'NUEVO').length;
-            const proyectosActivos = proyectos.filter(p => p.Fase !== 'COMPLETADO').length;
-            const proyectosValor = proyectos.reduce((s, r) => s + (parseFloat(r.Precio) || 0), 0);
-
-            document.getElementById('kpiClientes').textContent = clientesActivos || clientes.length || '0';
-            document.getElementById('kpiLeads').textContent = leadsAbiertos || leads.length || '0';
-            document.getElementById('kpiProyectos').textContent = proyectosActivos || proyectos.length || '0';
-            document.getElementById('kpiFacturacion').textContent = fmt(totalIngresos);
-
-            document.getElementById('statClientes').textContent = clientes.length || '0';
-            document.getElementById('statClientesActivos').textContent = clientesActivos || '0';
-            document.getElementById('statLeads').textContent = leads.length || '0';
-            document.getElementById('statLeadsNuevos').textContent = leadsNuevos || '0';
-            document.getElementById('statProyectos').textContent = proyectosActivos || '0';
-            document.getElementById('statProyectosValor').textContent = fmt(proyectosValor);
-            document.getElementById('statIngresos').textContent = fmt(totalIngresos);
-            document.getElementById('statGastos').textContent = fmt(totalGastos);
+        async function fetchEmailTracking() {
+            try {
+                const res = await fetch(WEBHOOK_EMAIL);
+                if (res.ok) return await res.json();
+            } catch (e) { console.error('Error email tracking:', e); }
+            return [];
         }
 
-        loadData();
+        // Chart
+        let chartFinanciero = null;
+        function renderChart(ingresos, gastos) {
+            const ctx = document.getElementById('chartFinanciero').getContext('2d');
+            const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+            const currentMonth = new Date().getMonth();
+            const labels = months.slice(Math.max(0, currentMonth - 5), currentMonth + 1);
+
+            // Agrupar por mes
+            const ingByMonth = new Array(12).fill(0);
+            const gasByMonth = new Array(12).fill(0);
+
+            ingresos.forEach(r => {
+                const fecha = r.Fecha || r.fecha;
+                if (fecha) {
+                    const parts = String(fecha).split(/[\/\-]/);
+                    const month = parts.length >= 2 ? parseInt(parts[1]) - 1 : 0;
+                    ingByMonth[month] += parseFloat(r.Base_Imponible || r.base || 0);
+                }
+            });
+            gastos.forEach(r => {
+                const fecha = r.Fecha || r.fecha;
+                if (fecha) {
+                    const parts = String(fecha).split(/[\/\-]/);
+                    const month = parts.length >= 2 ? parseInt(parts[1]) - 1 : 0;
+                    gasByMonth[month] += parseFloat(r.Base_Imponible || r.base || 0);
+                }
+            });
+
+            const dataIngresos = labels.map((_, i) => ingByMonth[Math.max(0, currentMonth - 5) + i] || 0);
+            const dataGastos = labels.map((_, i) => gasByMonth[Math.max(0, currentMonth - 5) + i] || 0);
+
+            if (chartFinanciero) chartFinanciero.destroy();
+            chartFinanciero = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [
+                        { label: 'Ingresos', data: dataIngresos, backgroundColor: 'rgba(16, 185, 129, 0.8)', borderRadius: 6 },
+                        { label: 'Gastos', data: dataGastos, backgroundColor: 'rgba(239, 68, 68, 0.8)', borderRadius: 6 }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: true, position: 'top', labels: { color: getComputedStyle(document.body).getPropertyValue('--text-muted'), font: { size: 11 } } } },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: getComputedStyle(document.body).getPropertyValue('--text-muted') } },
+                        y: { grid: { color: 'rgba(148,163,184,0.1)' }, ticks: { color: getComputedStyle(document.body).getPropertyValue('--text-muted'), callback: v => fmt(v) } }
+                    }
+                }
+            });
+        }
+
+        // Render Proyectos por Fase
+        function renderProyectosFases(proyectos) {
+            const fases = { INICIO: 0, DESARROLLO: 0, REVISION: 0, ENTREGA: 0, COMPLETADO: 0 };
+            const colors = { INICIO: 'var(--info)', DESARROLLO: 'var(--purple)', REVISION: 'var(--warning)', ENTREGA: 'var(--primary)', COMPLETADO: 'var(--success)' };
+            const icons = { INICIO: '🚀', DESARROLLO: '⚙️', REVISION: '🔍', ENTREGA: '📦', COMPLETADO: '✅' };
+
+            proyectos.forEach(p => {
+                const fase = p.Fase || 'INICIO';
+                if (fases.hasOwnProperty(fase)) fases[fase]++;
+            });
+
+            const total = proyectos.length || 1;
+            const container = document.getElementById('proyectosFases');
+            container.innerHTML = Object.entries(fases).map(([fase, count]) => `
+        <div class="progress-item">
+          <div class="progress-header">
+            <span>${icons[fase]} ${fase}</span>
+            <span>${count}</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: ${(count / total * 100)}%; background: ${colors[fase]}"></div>
+          </div>
+        </div>
+      `).join('');
+        }
+
+        // Render Leads Recientes
+        function renderLeadsRecientes(leads) {
+            const container = document.getElementById('leadsRecientes');
+            const recientes = leads.slice(-5).reverse();
+
+            if (recientes.length === 0) {
+                container.innerHTML = '<div class="loading-text">No hay leads</div>';
+                return;
+            }
+
+            const estadoColors = { NUEVO: 'blue', CONTACTADO: 'purple', PROPUESTA: 'orange', NEGOCIANDO: 'pink', GANADO: 'green' };
+            container.innerHTML = recientes.map(l => `
+        <div class="mini-item" onclick="location.href='leads.html'">
+          <div class="mini-item-left">
+            <div class="mini-item-icon ${estadoColors[l.Estado] || 'blue'}">🎯</div>
+            <div>
+              <div class="mini-item-name">${l.Nombre || 'Sin nombre'}</div>
+              <div class="mini-item-sub">${l.Contacto || l.Origen || '-'}</div>
+            </div>
+          </div>
+          <div class="mini-item-right">
+            ${l.Valor_Estimado ? `<div class="mini-item-value">${fmt(l.Valor_Estimado)}</div>` : ''}
+            <span class="mini-item-badge badge-new">${l.Estado || 'NUEVO'}</span>
+          </div>
+        </div>
+      `).join('');
+        }
+
+        // Render Email Outreach
+        function renderEmailOutreach(emails) {
+            const container = document.getElementById('emailOutreach');
+
+            if (!emails || emails.length === 0) {
+                container.innerHTML = '<div class="loading-text">Activa el workflow Email Tracking</div>';
+                return;
+            }
+
+            const hot = emails.filter(e => e.interes === 'hot').slice(0, 5);
+            const toShow = hot.length > 0 ? hot : emails.slice(0, 5);
+
+            container.innerHTML = toShow.map(e => {
+                const badgeClass = e.interes === 'hot' ? 'badge-hot' : (e.interes === 'warm' ? 'badge-warm' : 'badge-cold');
+                const badgeText = e.interes === 'hot' ? '🔥 Caliente' : (e.interes === 'warm' ? '🌡️ Tibio' : '❄️ Frío');
+                return `
+          <div class="mini-item" onclick="location.href='comercial.html'">
+            <div class="mini-item-left">
+              <div class="mini-item-icon ${e.interes === 'hot' ? 'green' : (e.interes === 'warm' ? 'orange' : '')}">📧</div>
+              <div>
+                <div class="mini-item-name">${e.empresa || '-'}</div>
+                <div class="mini-item-sub">${e.email || '-'}</div>
+              </div>
+            </div>
+            <div class="mini-item-right">
+              <div class="mini-item-value">${e.aperturas || 0} aperturas</div>
+              <span class="mini-item-badge ${badgeClass}">${badgeText}</span>
+            </div>
+          </div>
+        `;
+            }).join('');
+        }
+
+        // Load All Data
+        async function loadAllData() {
+            const btn = document.getElementById('refreshBtn');
+            btn.classList.add('loading');
+            btn.innerHTML = '⏳ Cargando...';
+
+            try {
+                const [ingresos, gastos, clientes, leads, proyectos, emails] = await Promise.all([
+                    fetchSheet(SHEETS.contabilidad, 'Ingresos'),
+                    fetchSheet(SHEETS.contabilidad, 'Gastos'),
+                    fetchSheet(SHEETS.clientes),
+                    fetchSheet(SHEETS.leads),
+                    fetchSheet(SHEETS.proyectos),
+                    fetchEmailTracking()
+                ]);
+
+                // KPIs
+                const totalIngresos = ingresos.reduce((s, r) => s + (parseFloat(r.Base_Imponible) || 0), 0);
+                const totalGastos = gastos.reduce((s, r) => s + (parseFloat(r.Base_Imponible) || 0), 0);
+                const clientesActivos = clientes.filter(c => c.Estado === 'ACTIVO' || !c.Estado).length || clientes.length;
+                const leadsActivos = leads.filter(l => !['GANADO', 'PERDIDO'].includes(l.Estado)).length || leads.length;
+                const proyectosActivos = proyectos.filter(p => p.Fase !== 'COMPLETADO').length || proyectos.length;
+                const hotLeads = Array.isArray(emails) ? emails.filter(e => e.interes === 'hot').length : 0;
+
+                document.getElementById('kpiIngresos').textContent = fmt(totalIngresos);
+                document.getElementById('kpiGastos').textContent = fmt(totalGastos);
+                document.getElementById('kpiClientes').textContent = clientesActivos;
+                document.getElementById('kpiLeads').textContent = leadsActivos;
+                document.getElementById('kpiProyectos').textContent = proyectosActivos;
+                document.getElementById('kpiHotLeads').textContent = hotLeads;
+
+                // Chart
+                renderChart(ingresos, gastos);
+
+                // Cards
+                renderProyectosFases(proyectos);
+                renderLeadsRecientes(leads);
+                renderEmailOutreach(Array.isArray(emails) ? emails : []);
+
+                // Update timestamp
+                document.getElementById('lastUpdate').textContent = `Actualizado: ${new Date().toLocaleTimeString('es-ES')}`;
+
+            } catch (e) {
+                console.error('Error loading data:', e);
+            }
+
+            btn.classList.remove('loading');
+            btn.innerHTML = '🔄 Actualizar';
+        }
+
+        // Init
+        loadAllData();
     </script>
 </body>
 
