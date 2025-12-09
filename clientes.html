@@ -459,7 +459,7 @@
 
     <script>
         const SHEETS_ID = '1X-wjUgctzNOiDu7Y7pposZqctCGZQGxbACpYkYWyIRc';
-        const WEBHOOK = 'https://hooks.pracmatik.com/webhook/crm-cliente';
+        const WEBHOOK = 'https://n8n-mcp-n8n.2slval.easypanel.host/webhook/crm-cliente';
         let allClients = [];
 
         const savedTheme = localStorage.getItem('theme') || 'dark';
@@ -467,7 +467,7 @@
 
         async function fetchClients() {
             try {
-                const res = await fetch(`https://docs.google.com/spreadsheets/d/${SHEETS_ID}/gviz/tq?tqx=out:json&sheet=Clientes`);
+                const res = await fetch(`https://docs.google.com/spreadsheets/d/${SHEETS_ID}/gviz/tq?tqx=out:json&sheet=Hoja%201`);
                 const text = await res.text();
                 const json = JSON.parse(text.substring(47, text.length - 2));
                 const cols = json.table.cols.map(c => c.label);

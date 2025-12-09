@@ -437,7 +437,7 @@
 
     <script>
         const SHEETS_ID = '1FH7wmTbfwbs4UtFuOP_bxV7GQAJwHTp1jG-hc-_u93w';
-        const WEBHOOK = 'https://hooks.pracmatik.com/webhook/crm-lead';
+        const WEBHOOK = 'https://n8n-mcp-n8n.2slval.easypanel.host/webhook/crm-lead';
         const STATES = ['NUEVO', 'CONTACTADO', 'PROPUESTA', 'NEGOCIANDO', 'GANADO', 'PERDIDO'];
         const STATE_ICONS = { NUEVO: '🆕', CONTACTADO: '📞', PROPUESTA: '📝', NEGOCIANDO: '🤝', GANADO: '✅', PERDIDO: '❌' };
         const STATE_COLORS = { NUEVO: '#3b82f6', CONTACTADO: '#8b5cf6', PROPUESTA: '#f59e0b', NEGOCIANDO: '#6366f1', GANADO: '#10b981', PERDIDO: '#ef4444' };
@@ -447,7 +447,7 @@
 
         async function fetchLeads() {
             try {
-                const res = await fetch(`https://docs.google.com/spreadsheets/d/${SHEETS_ID}/gviz/tq?tqx=out:json&sheet=Leads`);
+                const res = await fetch(`https://docs.google.com/spreadsheets/d/${SHEETS_ID}/gviz/tq?tqx=out:json&sheet=Hoja%201`);
                 const text = await res.text();
                 const json = JSON.parse(text.substring(47, text.length - 2));
                 const cols = json.table.cols.map(c => c.label);
