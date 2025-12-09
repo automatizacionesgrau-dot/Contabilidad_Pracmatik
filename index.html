@@ -3,7 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <title>📊 Contabilidad Pracmatik</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
@@ -15,12 +16,24 @@
             --warning: #f59e0b;
             --danger: #ef4444;
             --info: #3b82f6;
-            --bg-dark: #0f172a;
-            --bg-card: rgba(30, 41, 59, 0.8);
+        }
+
+        .dark {
+            --bg-main: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.9);
+            --bg-glass: rgba(255, 255, 255, 0.05);
             --text: #f1f5f9;
             --text-muted: #94a3b8;
             --border: rgba(148, 163, 184, 0.2);
-            --glass: rgba(255, 255, 255, 0.05);
+        }
+
+        .light {
+            --bg-main: #f1f5f9;
+            --bg-card: rgba(255, 255, 255, 0.95);
+            --bg-glass: rgba(0, 0, 0, 0.03);
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: rgba(0, 0, 0, 0.1);
         }
 
         * {
@@ -30,79 +43,171 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg-dark);
-            background-image:
-                radial-gradient(at 20% 20%, rgba(99, 102, 241, 0.15) 0, transparent 50%),
-                radial-gradient(at 80% 80%, rgba(16, 185, 129, 0.1) 0, transparent 50%);
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg-main);
             min-height: 100vh;
             color: var(--text);
-            padding: 20px;
+            transition: background 0.4s, color 0.4s;
+        }
+
+        .bg-depth {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .bg-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .bg-orb.o1 {
+            width: 500px;
+            height: 500px;
+            background: var(--primary);
+            top: -150px;
+            left: -100px;
+        }
+
+        .bg-orb.o2 {
+            width: 400px;
+            height: 400px;
+            background: var(--success);
+            bottom: -100px;
+            right: -50px;
+            animation-delay: -7s;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translate(0, 0);
+            }
+
+            50% {
+                transform: translate(30px, -30px);
+            }
+        }
+
+        .light .bg-orb {
+            opacity: 0.12;
         }
 
         .container {
-            max-width: 800px;
+            position: relative;
+            z-index: 1;
+            max-width: 700px;
             margin: 0 auto;
+            padding: 15px;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-15px);
+            }
         }
 
         .logo {
-            font-size: 48px;
-            margin-bottom: 10px;
+            font-size: 42px;
+            margin-bottom: 8px;
         }
 
         h1 {
-            font-size: 32px;
+            font-size: clamp(22px, 5vw, 28px);
             font-weight: 800;
             background: linear-gradient(135deg, var(--primary-light), var(--success));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
         }
 
         .subtitle {
             color: var(--text-muted);
-            font-size: 14px;
+            font-size: 13px;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 44px;
+            height: 26px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: 13px;
+            cursor: pointer;
+        }
+
+        .theme-toggle::before {
+            content: '🌙';
+            position: absolute;
+            left: 4px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+
+        .light .theme-toggle::before {
+            content: '☀️';
+            left: calc(100% - 20px);
         }
 
         .card {
             background: var(--bg-card);
             backdrop-filter: blur(20px);
             border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 30px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.5s ease 0.1s both;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
         }
 
         .tabs {
             display: flex;
-            gap: 8px;
-            margin-bottom: 25px;
-            background: var(--glass);
-            padding: 6px;
-            border-radius: 16px;
+            gap: 6px;
+            margin-bottom: 20px;
+            background: var(--bg-glass);
+            padding: 5px;
+            border-radius: 14px;
         }
 
         .tab {
             flex: 1;
-            padding: 14px 20px;
+            padding: 12px 8px;
             border: none;
             background: transparent;
             color: var(--text-muted);
             font-family: inherit;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
-            border-radius: 12px;
+            border-radius: 10px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
+            gap: 3px;
         }
 
         .tab:hover {
@@ -112,27 +217,27 @@
 
         .tab.active {
             color: white;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
-        .tab.active.ingreso {
+        .tab.active.ing {
             background: var(--success);
         }
 
-        .tab.active.gasto {
+        .tab.active.gas {
             background: var(--danger);
         }
 
-        .tab.active.compra {
+        .tab.active.com {
             background: var(--warning);
         }
 
-        .tab.active.pago {
+        .tab.active.pag {
             background: var(--info);
         }
 
         .tab-icon {
-            font-size: 20px;
+            font-size: 18px;
         }
 
         .panel {
@@ -141,50 +246,52 @@
 
         .panel.active {
             display: block;
+            animation: fadeIn 0.3s ease;
         }
 
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 15px;
+            gap: 12px;
+            margin-bottom: 12px;
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 500px) {
             .form-row {
                 grid-template-columns: 1fr;
             }
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         label {
             display: block;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             color: var(--text-muted);
-            margin-bottom: 6px;
+            margin-bottom: 5px;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        label .required {
+        label .req {
             color: var(--danger);
         }
 
         input,
         select {
             width: 100%;
-            padding: 14px 16px;
-            font-size: 15px;
+            padding: 12px 14px;
+            font-size: 14px;
             font-family: inherit;
             color: var(--text);
-            background: var(--glass);
+            background: var(--bg-glass);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: 10px;
             outline: none;
-            transition: all 0.2s ease;
+            transition: all 0.2s;
         }
 
         input:focus,
@@ -200,64 +307,65 @@
         select {
             cursor: pointer;
             appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
-            background-position: right 12px center;
+            background-position: right 10px center;
         }
 
-        .input-group {
+        .input-row {
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
 
-        .input-group input {
+        .input-row input {
             flex: 1;
         }
 
         .input-suffix {
             display: flex;
             align-items: center;
-            padding: 0 16px;
-            background: var(--glass);
+            padding: 0 14px;
+            background: var(--bg-glass);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: 10px;
             color: var(--text-muted);
             font-weight: 500;
+            font-size: 14px;
         }
 
         .submit-btn {
             width: 100%;
-            padding: 18px;
-            margin-top: 10px;
-            font-size: 16px;
+            padding: 16px;
+            margin-top: 8px;
+            font-size: 15px;
             font-weight: 700;
             font-family: inherit;
             color: white;
             border: none;
-            border-radius: 14px;
+            border-radius: 12px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
         }
 
-        .submit-btn.ingreso {
+        .submit-btn.ing {
             background: linear-gradient(135deg, #10b981, #059669);
         }
 
-        .submit-btn.gasto {
+        .submit-btn.gas {
             background: linear-gradient(135deg, #ef4444, #dc2626);
         }
 
-        .submit-btn.compra {
+        .submit-btn.com {
             background: linear-gradient(135deg, #f59e0b, #d97706);
         }
 
-        .submit-btn.pago {
+        .submit-btn.pag {
             background: linear-gradient(135deg, #3b82f6, #2563eb);
         }
 
         .submit-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
         }
 
         .submit-btn:disabled {
@@ -266,10 +374,58 @@
             transform: none;
         }
 
+        .error-msg {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 13px;
+            display: none;
+        }
+
+        .error-msg.show {
+            display: block;
+            animation: shake 0.4s ease;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        .link {
+            display: block;
+            text-align: center;
+            margin-top: 18px;
+            color: var(--primary-light);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .link:hover {
+            color: var(--text);
+        }
+
+        /* Modal */
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.75);
             backdrop-filter: blur(8px);
             display: flex;
             align-items: center;
@@ -277,7 +433,7 @@
             padding: 20px;
             opacity: 0;
             visibility: hidden;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
             z-index: 1000;
         }
 
@@ -290,12 +446,12 @@
             background: var(--bg-card);
             backdrop-filter: blur(20px);
             border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 40px;
-            max-width: 480px;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 420px;
             width: 100%;
             transform: scale(0.9);
-            transition: transform 0.3s ease;
+            transition: transform 0.3s;
         }
 
         .modal-overlay.active .modal {
@@ -303,39 +459,40 @@
         }
 
         .modal-icon {
-            width: 80px;
-            height: 80px;
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 20px;
-            font-size: 40px;
+            margin: 0 auto 15px;
+            font-size: 32px;
             background: linear-gradient(135deg, #10b981, #059669);
         }
 
         .modal h2 {
             text-align: center;
-            font-size: 24px;
-            margin-bottom: 8px;
+            font-size: 20px;
+            margin-bottom: 6px;
         }
 
-        .modal .subtitle {
+        .modal .sub {
             text-align: center;
-            margin-bottom: 25px;
             color: var(--text-muted);
+            font-size: 13px;
+            margin-bottom: 20px;
         }
 
         .result-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            gap: 10px;
         }
 
         .result-item {
-            background: var(--glass);
-            padding: 15px;
-            border-radius: 12px;
+            background: var(--bg-glass);
+            padding: 12px;
+            border-radius: 10px;
             border: 1px solid var(--border);
         }
 
@@ -344,19 +501,19 @@
         }
 
         .result-label {
-            font-size: 11px;
+            font-size: 10px;
             color: var(--text-muted);
             text-transform: uppercase;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
         }
 
         .result-value {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 700;
         }
 
-        .result-value.highlight {
-            font-size: 28px;
+        .result-value.big {
+            font-size: 24px;
             background: linear-gradient(135deg, var(--primary-light), var(--success));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -364,311 +521,225 @@
 
         .badge {
             display: inline-block;
-            padding: 4px 12px;
+            padding: 3px 10px;
             background: var(--primary);
-            border-radius: 20px;
-            font-size: 12px;
+            border-radius: 15px;
+            font-size: 11px;
             font-weight: 600;
         }
 
         .close-btn {
             width: 100%;
-            padding: 16px;
-            margin-top: 25px;
-            font-size: 15px;
+            padding: 14px;
+            margin-top: 20px;
+            font-size: 14px;
             font-weight: 600;
             font-family: inherit;
             color: var(--text);
-            background: var(--glass);
+            background: var(--bg-glass);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: 10px;
             cursor: pointer;
         }
 
         .close-btn:hover {
             background: rgba(255, 255, 255, 0.1);
         }
-
-        .error-msg {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            color: #fca5a5;
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            text-align: center;
-            display: none;
-        }
-
-        .error-msg.show {
-            display: block;
-        }
-
-        .dashboard-link {
-            display: block;
-            text-align: center;
-            margin-top: 20px;
-            color: var(--primary-light);
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .dashboard-link:hover {
-            color: var(--text);
-        }
     </style>
 </head>
 
-<body>
+<body class="dark">
+    <div class="bg-depth">
+        <div class="bg-orb o1"></div>
+        <div class="bg-orb o2"></div>
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Cambiar tema"></button>
+
     <div class="container">
         <header class="header">
             <div class="logo">📊</div>
             <h1>Contabilidad Pracmatik</h1>
-            <p class="subtitle">Sistema de registro fiscal automatizado · AEAT</p>
+            <p class="subtitle">Sistema fiscal automatizado · AEAT</p>
         </header>
 
         <div class="card">
             <div class="tabs">
-                <button class="tab active ingreso" data-panel="ingreso" onclick="switchTab(this)">
-                    <span class="tab-icon">📈</span><span>Ingresos</span>
-                </button>
-                <button class="tab gasto" data-panel="gasto" onclick="switchTab(this)">
-                    <span class="tab-icon">📉</span><span>Gastos</span>
-                </button>
-                <button class="tab compra" data-panel="compra" onclick="switchTab(this)">
-                    <span class="tab-icon">🛒</span><span>Compras</span>
-                </button>
-                <button class="tab pago" data-panel="pago" onclick="switchTab(this)">
-                    <span class="tab-icon">💳</span><span>Pagos</span>
-                </button>
+                <button class="tab active ing" data-panel="ing" onclick="switchTab(this)"><span
+                        class="tab-icon">📈</span><span>Ingresos</span></button>
+                <button class="tab gas" data-panel="gas" onclick="switchTab(this)"><span
+                        class="tab-icon">📉</span><span>Gastos</span></button>
+                <button class="tab com" data-panel="com" onclick="switchTab(this)"><span
+                        class="tab-icon">🛒</span><span>Compras</span></button>
+                <button class="tab pag" data-panel="pag" onclick="switchTab(this)"><span
+                        class="tab-icon">💳</span><span>Pagos</span></button>
             </div>
 
             <div id="errorMsg" class="error-msg"></div>
 
             <!-- INGRESOS -->
-            <div id="panel-ingreso" class="panel active">
-                <form id="form-ingreso" onsubmit="submitForm(event, 'INGRESO')">
+            <div id="panel-ing" class="panel active">
+                <form id="form-ing" onsubmit="submitForm(event,'INGRESO')">
                     <div class="form-row">
-                        <div class="form-group">
-                            <label>Fecha <span class="required">*</span></label>
-                            <input type="date" name="fecha" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Cliente <span class="required">*</span></label>
-                            <input type="text" name="tercero" placeholder="Nombre o razón social" required>
-                        </div>
+                        <div class="form-group"><label>Fecha <span class="req">*</span></label><input type="date"
+                                name="fecha" required></div>
+                        <div class="form-group"><label>Cliente <span class="req">*</span></label><input type="text"
+                                name="tercero" placeholder="Razón social" required></div>
                     </div>
                     <div class="form-row">
-                        <div class="form-group">
-                            <label>NIF/CIF <span class="required">*</span></label>
-                            <input type="text" name="nif" placeholder="B12345678" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Concepto <span class="required">*</span></label>
-                            <input type="text" name="concepto" placeholder="Descripción del servicio" required>
-                        </div>
+                        <div class="form-group"><label>NIF/CIF <span class="req">*</span></label><input type="text"
+                                name="nif" placeholder="B12345678" required></div>
+                        <div class="form-group"><label>Concepto <span class="req">*</span></label><input type="text"
+                                name="concepto" placeholder="Servicio prestado" required></div>
                     </div>
                     <div class="form-row">
-                        <div class="form-group">
-                            <label>Base Imponible <span class="required">*</span></label>
-                            <div class="input-group">
-                                <input type="number" name="base" step="0.01" min="0" placeholder="1000.00" required>
-                                <span class="input-suffix">€</span>
-                            </div>
+                        <div class="form-group"><label>Base Imponible <span class="req">*</span></label>
+                            <div class="input-row"><input type="number" name="base" step="0.01" min="0"
+                                    placeholder="1000" required><span class="input-suffix">€</span></div>
                         </div>
-                        <div class="form-group">
-                            <label>IVA</label>
-                            <select name="iva_pct">
-                                <option value="21">21% General</option>
-                                <option value="10">10% Reducido</option>
-                                <option value="4">4% Superreducido</option>
-                                <option value="0">0% Exento</option>
-                            </select>
-                        </div>
+                        <div class="form-group"><label>IVA</label><select name="iva_pct">
+                                <option value="21">21%</option>
+                                <option value="10">10%</option>
+                                <option value="4">4%</option>
+                                <option value="0">0%</option>
+                            </select></div>
                     </div>
                     <div class="form-row">
-                        <div class="form-group">
-                            <label>Retención IRPF</label>
-                            <select name="irpf_pct">
-                                <option value="0">0% Sin retención</option>
-                                <option value="7">7% Nuevos autónomos</option>
-                                <option value="15" selected>15% General</option>
-                                <option value="19">19% Alquileres</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Estado</label>
-                            <select name="estado_pago">
+                        <div class="form-group"><label>IRPF</label><select name="irpf_pct">
+                                <option value="0">0%</option>
+                                <option value="7">7%</option>
+                                <option value="15" selected>15%</option>
+                                <option value="19">19%</option>
+                            </select></div>
+                        <div class="form-group"><label>Estado</label><select name="estado_pago">
                                 <option value="PENDIENTE">Pendiente</option>
                                 <option value="COBRADO">Cobrado</option>
-                            </select>
-                        </div>
+                            </select></div>
                     </div>
-                    <button type="submit" class="submit-btn ingreso">💾 Registrar Ingreso</button>
+                    <button type="submit" class="submit-btn ing">💾 Registrar Ingreso</button>
                 </form>
             </div>
 
             <!-- GASTOS -->
-            <div id="panel-gasto" class="panel">
-                <form id="form-gasto" onsubmit="submitForm(event, 'GASTO')">
+            <div id="panel-gas" class="panel">
+                <form id="form-gas" onsubmit="submitForm(event,'GASTO')">
                     <div class="form-row">
-                        <div class="form-group">
-                            <label>Fecha <span class="required">*</span></label>
-                            <input type="date" name="fecha" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Proveedor <span class="required">*</span></label>
-                            <input type="text" name="tercero" placeholder="Nombre del proveedor" required>
-                        </div>
+                        <div class="form-group"><label>Fecha <span class="req">*</span></label><input type="date"
+                                name="fecha" required></div>
+                        <div class="form-group"><label>Proveedor <span class="req">*</span></label><input type="text"
+                                name="tercero" placeholder="Nombre proveedor" required></div>
                     </div>
                     <div class="form-row">
-                        <div class="form-group">
-                            <label>NIF/CIF</label>
-                            <input type="text" name="nif" placeholder="B12345678">
-                        </div>
-                        <div class="form-group">
-                            <label>Concepto <span class="required">*</span></label>
-                            <input type="text" name="concepto" placeholder="Descripción del gasto" required>
-                        </div>
+                        <div class="form-group"><label>NIF/CIF</label><input type="text" name="nif"
+                                placeholder="B12345678"></div>
+                        <div class="form-group"><label>Concepto <span class="req">*</span></label><input type="text"
+                                name="concepto" placeholder="Descripción" required></div>
                     </div>
                     <div class="form-row">
-                        <div class="form-group">
-                            <label>Base Imponible <span class="required">*</span></label>
-                            <div class="input-group">
-                                <input type="number" name="base" step="0.01" min="0" placeholder="500.00" required>
-                                <span class="input-suffix">€</span>
-                            </div>
+                        <div class="form-group"><label>Base Imponible <span class="req">*</span></label>
+                            <div class="input-row"><input type="number" name="base" step="0.01" min="0"
+                                    placeholder="500" required><span class="input-suffix">€</span></div>
                         </div>
-                        <div class="form-group">
-                            <label>IVA</label>
-                            <select name="iva_pct">
-                                <option value="21" selected>21% General</option>
-                                <option value="10">10% Reducido</option>
-                                <option value="4">4% Superreducido</option>
-                                <option value="0">0% Sin IVA</option>
-                            </select>
-                        </div>
+                        <div class="form-group"><label>IVA</label><select name="iva_pct">
+                                <option value="21" selected>21%</option>
+                                <option value="10">10%</option>
+                                <option value="4">4%</option>
+                                <option value="0">0%</option>
+                            </select></div>
                     </div>
-                    <div class="form-group">
-                        <label>Estado</label>
-                        <select name="estado_pago">
+                    <div class="form-group"><label>Estado</label><select name="estado_pago">
                             <option value="PENDIENTE">Pendiente</option>
                             <option value="PAGADO">Pagado</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="submit-btn gasto">💾 Registrar Gasto</button>
+                        </select></div>
+                    <button type="submit" class="submit-btn gas">💾 Registrar Gasto</button>
                 </form>
             </div>
 
             <!-- COMPRAS -->
-            <div id="panel-compra" class="panel">
-                <form id="form-compra" onsubmit="submitForm(event, 'COMPRA')">
+            <div id="panel-com" class="panel">
+                <form id="form-com" onsubmit="submitForm(event,'COMPRA')">
                     <div class="form-row">
-                        <div class="form-group">
-                            <label>Fecha <span class="required">*</span></label>
-                            <input type="date" name="fecha" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Proveedor <span class="required">*</span></label>
-                            <input type="text" name="tercero" placeholder="Tienda o proveedor" required>
-                        </div>
+                        <div class="form-group"><label>Fecha <span class="req">*</span></label><input type="date"
+                                name="fecha" required></div>
+                        <div class="form-group"><label>Tienda <span class="req">*</span></label><input type="text"
+                                name="tercero" placeholder="Nombre tienda" required></div>
                     </div>
                     <div class="form-row">
-                        <div class="form-group">
-                            <label>NIF/CIF</label>
-                            <input type="text" name="nif" placeholder="B12345678">
-                        </div>
-                        <div class="form-group">
-                            <label>Producto <span class="required">*</span></label>
-                            <input type="text" name="concepto" placeholder="Descripción del producto" required>
-                        </div>
+                        <div class="form-group"><label>NIF/CIF</label><input type="text" name="nif"
+                                placeholder="Opcional"></div>
+                        <div class="form-group"><label>Producto <span class="req">*</span></label><input type="text"
+                                name="concepto" placeholder="Descripción" required></div>
                     </div>
                     <div class="form-row">
-                        <div class="form-group">
-                            <label>Importe sin IVA <span class="required">*</span></label>
-                            <div class="input-group">
-                                <input type="number" name="base" step="0.01" min="0" placeholder="100.00" required>
-                                <span class="input-suffix">€</span>
-                            </div>
+                        <div class="form-group"><label>Importe sin IVA <span class="req">*</span></label>
+                            <div class="input-row"><input type="number" name="base" step="0.01" min="0"
+                                    placeholder="100" required><span class="input-suffix">€</span></div>
                         </div>
-                        <div class="form-group">
-                            <label>IVA</label>
-                            <select name="iva_pct">
-                                <option value="21" selected>21% General</option>
-                                <option value="10">10% Reducido</option>
-                                <option value="4">4% Superreducido</option>
-                                <option value="0">0% Sin IVA</option>
-                            </select>
-                        </div>
+                        <div class="form-group"><label>IVA</label><select name="iva_pct">
+                                <option value="21" selected>21%</option>
+                                <option value="10">10%</option>
+                                <option value="4">4%</option>
+                                <option value="0">0%</option>
+                            </select></div>
                     </div>
-                    <button type="submit" class="submit-btn compra">💾 Registrar Compra</button>
+                    <button type="submit" class="submit-btn com">💾 Registrar Compra</button>
                 </form>
             </div>
 
             <!-- PAGOS -->
-            <div id="panel-pago" class="panel">
-                <form id="form-pago" onsubmit="submitForm(event, 'PAGO')">
+            <div id="panel-pag" class="panel">
+                <form id="form-pag" onsubmit="submitForm(event,'PAGO')">
                     <div class="form-row">
-                        <div class="form-group">
-                            <label>Fecha <span class="required">*</span></label>
-                            <input type="date" name="fecha" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Destinatario <span class="required">*</span></label>
-                            <input type="text" name="tercero" placeholder="A quién se paga" required>
-                        </div>
+                        <div class="form-group"><label>Fecha <span class="req">*</span></label><input type="date"
+                                name="fecha" required></div>
+                        <div class="form-group"><label>Destinatario <span class="req">*</span></label><input type="text"
+                                name="tercero" placeholder="A quién" required></div>
                     </div>
                     <div class="form-row">
-                        <div class="form-group">
-                            <label>NIF/CIF</label>
-                            <input type="text" name="nif" placeholder="B12345678">
-                        </div>
-                        <div class="form-group">
-                            <label>Concepto <span class="required">*</span></label>
-                            <input type="text" name="concepto" placeholder="Motivo del pago" required>
-                        </div>
+                        <div class="form-group"><label>NIF/CIF</label><input type="text" name="nif"
+                                placeholder="Opcional"></div>
+                        <div class="form-group"><label>Concepto <span class="req">*</span></label><input type="text"
+                                name="concepto" placeholder="Motivo" required></div>
                     </div>
                     <div class="form-row">
-                        <div class="form-group">
-                            <label>Importe <span class="required">*</span></label>
-                            <div class="input-group">
-                                <input type="number" name="base" step="0.01" min="0" placeholder="300.00" required>
-                                <span class="input-suffix">€</span>
-                            </div>
+                        <div class="form-group"><label>Importe <span class="req">*</span></label>
+                            <div class="input-row"><input type="number" name="base" step="0.01" min="0"
+                                    placeholder="300" required><span class="input-suffix">€</span></div>
                         </div>
-                        <div class="form-group">
-                            <label>Estado</label>
-                            <select name="estado_pago">
+                        <div class="form-group"><label>Estado</label><select name="estado_pago">
                                 <option value="PAGADO" selected>Pagado</option>
                                 <option value="PENDIENTE">Pendiente</option>
-                            </select>
-                        </div>
+                            </select></div>
                     </div>
-                    <button type="submit" class="submit-btn pago">💾 Registrar Pago</button>
+                    <button type="submit" class="submit-btn pag">💾 Registrar Pago</button>
                 </form>
             </div>
         </div>
 
-        <a href="dashboard.html" class="dashboard-link">📊 Ver Dashboard Contable →</a>
+        <a href="dashboard.html" class="link">📊 Ver Dashboard →</a>
     </div>
 
     <!-- Modal -->
-    <div class="modal-overlay" id="resultModal">
+    <div class="modal-overlay" id="modal">
         <div class="modal">
             <div class="modal-icon">✓</div>
             <h2>Registro Guardado</h2>
-            <p class="subtitle">Sistema Contable Pracmatik</p>
+            <p class="sub">Sistema Contable Pracmatik</p>
             <div id="resultContent" class="result-grid"></div>
-            <button class="close-btn" onclick="closeModal()">✨ Registrar otro</button>
+            <button class="close-btn" onclick="closeModal()">✨ Nuevo registro</button>
         </div>
     </div>
 
     <script>
-        const WEBHOOK_URL = 'https://hooks.pracmatik.com/webhook/contabilidad-pragmatik';
+        const WEBHOOK = 'https://hooks.pracmatik.com/webhook/contabilidad-pragmatik';
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.body.className = savedTheme;
+        function toggleTheme() {
+            const t = document.body.classList.contains('dark') ? 'light' : 'dark';
+            document.body.className = t;
+            localStorage.setItem('theme', t);
+        }
 
-        document.querySelectorAll('input[type="date"]').forEach(input => {
-            input.valueAsDate = new Date();
-        });
+        document.querySelectorAll('input[type="date"]').forEach(i => i.valueAsDate = new Date());
 
         function switchTab(tab) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -678,96 +749,62 @@
             document.getElementById('errorMsg').classList.remove('show');
         }
 
-        async function submitForm(event, tipo) {
-            event.preventDefault();
-            const form = event.target;
+        async function submitForm(e, tipo) {
+            e.preventDefault();
+            const form = e.target;
             const btn = form.querySelector('.submit-btn');
-            const errorDiv = document.getElementById('errorMsg');
-
-            errorDiv.classList.remove('show');
+            const errDiv = document.getElementById('errorMsg');
+            errDiv.classList.remove('show');
             btn.disabled = true;
-            const originalText = btn.innerHTML;
-            btn.innerHTML = 'Procesando...';
+            const orig = btn.innerHTML;
+            btn.innerHTML = '⏳ Procesando...';
 
-            const formData = new FormData(form);
+            const fd = new FormData(form);
             const data = {
                 tipo_operacion: tipo,
-                fecha: formData.get('fecha'),
-                tercero: formData.get('tercero'),
-                nif: formData.get('nif') || '',
-                concepto: formData.get('concepto') || '',
-                base: parseFloat(formData.get('base')) || 0,
-                iva_pct: parseInt(formData.get('iva_pct')) || 0,
-                irpf_pct: parseInt(formData.get('irpf_pct')) || 0,
-                estado_pago: formData.get('estado_pago') || 'PENDIENTE'
+                fecha: fd.get('fecha'),
+                tercero: fd.get('tercero'),
+                nif: fd.get('nif') || '',
+                concepto: fd.get('concepto') || '',
+                base: parseFloat(fd.get('base')) || 0,
+                iva_pct: parseInt(fd.get('iva_pct')) || 0,
+                irpf_pct: parseInt(fd.get('irpf_pct')) || 0,
+                estado_pago: fd.get('estado_pago') || 'PENDIENTE'
             };
 
             try {
-                const response = await fetch(WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-
-                if (!response.ok) throw new Error('Error del servidor');
-                const result = await response.json();
-
-                if (result.success) {
-                    showResult(result);
+                const res = await fetch(WEBHOOK, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+                if (!res.ok) throw new Error('Error servidor');
+                const r = await res.json();
+                if (r.success) {
+                    showResult(r);
                     form.reset();
-                    document.querySelectorAll('input[type="date"]').forEach(input => {
-                        input.valueAsDate = new Date();
-                    });
-                } else {
-                    throw new Error(result.message || 'Error desconocido');
-                }
-            } catch (error) {
-                errorDiv.textContent = '❌ ' + error.message;
-                errorDiv.classList.add('show');
+                    document.querySelectorAll('input[type="date"]').forEach(i => i.valueAsDate = new Date());
+                } else throw new Error(r.message || 'Error');
+            } catch (err) {
+                errDiv.textContent = '❌ ' + err.message;
+                errDiv.classList.add('show');
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = originalText;
+                btn.innerHTML = orig;
             }
         }
 
-        function showResult(data) {
+        function showResult(d) {
+            const fmt = n => new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(n);
             document.getElementById('resultContent').innerHTML = `
-        <div class="result-item">
-          <div class="result-label">ID</div>
-          <div class="result-value">${data.ID_Unico}</div>
-        </div>
-        <div class="result-item">
-          <div class="result-label">Trimestre</div>
-          <div class="result-value"><span class="badge">${data.Trimestre}</span></div>
-        </div>
-        <div class="result-item">
-          <div class="result-label">Base</div>
-          <div class="result-value">${data.Base_Imponible.toFixed(2)} €</div>
-        </div>
-        <div class="result-item">
-          <div class="result-label">IVA (${data.IVA_Porcentaje}%)</div>
-          <div class="result-value">+${data.IVA_Cuota.toFixed(2)} €</div>
-        </div>
-        ${data.IRPF_Cuota > 0 ? `
-        <div class="result-item">
-          <div class="result-label">IRPF (${data.IRPF_Porcentaje}%)</div>
-          <div class="result-value">-${data.IRPF_Cuota.toFixed(2)} €</div>
-        </div>` : ''}
-        <div class="result-item full">
-          <div class="result-label">Total Factura</div>
-          <div class="result-value highlight">${data.Total_Factura.toFixed(2)} €</div>
-        </div>
+        <div class="result-item"><div class="result-label">ID</div><div class="result-value">${d.ID_Unico}</div></div>
+        <div class="result-item"><div class="result-label">Trimestre</div><div class="result-value"><span class="badge">${d.Trimestre}</span></div></div>
+        <div class="result-item"><div class="result-label">Base</div><div class="result-value">${fmt(d.Base_Imponible)}</div></div>
+        <div class="result-item"><div class="result-label">IVA ${d.IVA_Porcentaje}%</div><div class="result-value">+${fmt(d.IVA_Cuota)}</div></div>
+        ${d.IRPF_Cuota > 0 ? `<div class="result-item"><div class="result-label">IRPF ${d.IRPF_Porcentaje}%</div><div class="result-value">-${fmt(d.IRPF_Cuota)}</div></div>` : ''}
+        <div class="result-item full"><div class="result-label">Total</div><div class="result-value big">${fmt(d.Total_Factura)}</div></div>
       `;
-            document.getElementById('resultModal').classList.add('active');
+            document.getElementById('modal').classList.add('active');
         }
 
-        function closeModal() {
-            document.getElementById('resultModal').classList.remove('active');
-        }
-
-        document.getElementById('resultModal').addEventListener('click', (e) => {
-            if (e.target === e.currentTarget) closeModal();
-        });
+        function closeModal() { document.getElementById('modal').classList.remove('active'); }
+        document.getElementById('modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
     </script>
 </body>
 

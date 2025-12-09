@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0f172a">
   <title>📈 Dashboard Contable - Pracmatik</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
@@ -14,197 +18,484 @@
       --warning: #f59e0b;
       --danger: #ef4444;
       --info: #3b82f6;
-      --bg-dark: #0f172a;
-      --bg-card: rgba(30, 41, 59, 0.8);
+    }
+
+    .dark {
+      --bg-main: #0f172a;
+      --bg-card: rgba(30, 41, 59, 0.9);
+      --bg-glass: rgba(255, 255, 255, 0.05);
       --text: #f1f5f9;
       --text-muted: #94a3b8;
       --border: rgba(148, 163, 184, 0.2);
-      --glass: rgba(255, 255, 255, 0.05);
     }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    .light {
+      --bg-main: #f1f5f9;
+      --bg-card: rgba(255, 255, 255, 0.95);
+      --bg-glass: rgba(0, 0, 0, 0.03);
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: rgba(0, 0, 0, 0.1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
-      font-family: 'Inter', sans-serif;
-      background: var(--bg-dark);
-      background-image: radial-gradient(at 10% 10%, rgba(99, 102, 241, 0.15) 0, transparent 50%),
-                        radial-gradient(at 90% 90%, rgba(16, 185, 129, 0.1) 0, transparent 50%);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-main);
       min-height: 100vh;
       color: var(--text);
-      padding: 20px;
+      transition: background 0.4s, color 0.4s;
+      overflow-x: hidden;
     }
-    .container { max-width: 1400px; margin: 0 auto; }
+
+    /* 3D Background */
+    .bg-depth {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .bg-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.4;
+      animation: float 20s ease-in-out infinite;
+    }
+
+    .bg-orb.orb1 {
+      width: 600px;
+      height: 600px;
+      background: var(--primary);
+      top: -200px;
+      left: -100px;
+      animation-delay: 0s;
+    }
+
+    .bg-orb.orb2 {
+      width: 500px;
+      height: 500px;
+      background: var(--success);
+      bottom: -150px;
+      right: -100px;
+      animation-delay: -7s;
+    }
+
+    .bg-orb.orb3 {
+      width: 400px;
+      height: 400px;
+      background: var(--warning);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation-delay: -14s;
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      33% {
+        transform: translate(30px, -30px) scale(1.05);
+      }
+
+      66% {
+        transform: translate(-20px, 20px) scale(0.95);
+      }
+    }
+
+    .light .bg-orb {
+      opacity: 0.15;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 15px;
+    }
+
+    /* Header */
     .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 25px;
+      margin-bottom: 20px;
       flex-wrap: wrap;
       gap: 15px;
+      animation: slideDown 0.6s ease;
     }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
     .header h1 {
-      font-size: 28px;
+      font-size: clamp(20px, 5vw, 28px);
       font-weight: 800;
       background: linear-gradient(135deg, var(--primary-light), var(--success));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
-    .header p { color: var(--text-muted); font-size: 14px; }
-    .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
-    .btn {
-      padding: 12px 20px;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text);
-      background: var(--glass);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      cursor: pointer;
-      text-decoration: none;
+
+    .header-sub {
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    .header-actions {
       display: flex;
-      align-items: center;
       gap: 8px;
-      transition: all 0.2s;
+      flex-wrap: wrap;
     }
-    .btn:hover { background: rgba(255,255,255,0.1); transform: translateY(-2px); }
-    .btn-primary { background: var(--primary); border-color: var(--primary); }
-    .btn-success { background: var(--success); border-color: var(--success); }
 
-    /* Upload Zone */
-    .upload-section {
-      background: var(--bg-card);
-      border: 2px dashed var(--border);
-      border-radius: 20px;
-      padding: 30px;
-      margin-bottom: 25px;
-      text-align: center;
-      transition: all 0.3s;
-    }
-    .upload-section:hover, .upload-section.dragover {
-      border-color: var(--primary);
-      background: rgba(99, 102, 241, 0.1);
-    }
-    .upload-section h3 { font-size: 18px; margin-bottom: 10px; }
-    .upload-section p { color: var(--text-muted); font-size: 14px; margin-bottom: 15px; }
-    .upload-input { display: none; }
-    .upload-btn {
-      padding: 14px 30px;
-      font-size: 15px;
-      font-weight: 600;
-      color: white;
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-    .upload-btn:hover { transform: scale(1.05); box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3); }
-    .upload-status { margin-top: 15px; font-size: 14px; }
-    .upload-status.success { color: var(--success); }
-    .upload-status.error { color: var(--danger); }
-
-    /* Calendar Section */
-    .calendar-section {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 25px;
-      margin-bottom: 25px;
-    }
-    .calendar-title {
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .calendar-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 15px;
-    }
-    .deadline-card {
-      background: var(--glass);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 20px;
-      transition: all 0.3s;
-    }
-    .deadline-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
-    .deadline-card.urgent { border-color: var(--danger); background: rgba(239, 68, 68, 0.1); }
-    .deadline-card.soon { border-color: var(--warning); background: rgba(245, 158, 11, 0.1); }
-    .deadline-card.ok { border-color: var(--success); }
-    .deadline-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-    .deadline-model { font-size: 20px; font-weight: 700; }
-    .deadline-days {
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-    }
-    .deadline-card.urgent .deadline-days { background: var(--danger); }
-    .deadline-card.soon .deadline-days { background: var(--warning); color: #000; }
-    .deadline-card.ok .deadline-days { background: var(--success); }
-    .deadline-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 10px; }
-    .deadline-date { font-size: 14px; font-weight: 500; }
-    .deadline-action {
-      margin-top: 12px;
-      padding: 10px 15px;
-      width: 100%;
+    .btn {
+      padding: 10px 16px;
       font-size: 13px;
       font-weight: 600;
       color: var(--text);
-      background: var(--glass);
+      background: var(--bg-glass);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+
+    .btn-icon {
+      padding: 10px;
+    }
+
+    /* Theme Toggle */
+    .theme-toggle {
+      width: 50px;
+      height: 28px;
+      background: var(--bg-glass);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.3s;
+    }
+
+    .theme-toggle::before {
+      content: '🌙';
+      position: absolute;
+      left: 4px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+
+    .light .theme-toggle::before {
+      content: '☀️';
+      left: calc(100% - 22px);
+    }
+
+    /* Upload Zone */
+    .upload-zone {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 2px dashed var(--border);
+      border-radius: 16px;
+      padding: 25px;
+      text-align: center;
+      margin-bottom: 20px;
+      transition: all 0.3s;
+      animation: fadeIn 0.5s ease 0.1s both;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .upload-zone:hover,
+    .upload-zone.dragover {
+      border-color: var(--primary);
+      background: rgba(99, 102, 241, 0.1);
+    }
+
+    .upload-zone h3 {
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+
+    .upload-zone p {
+      color: var(--text-muted);
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    .upload-btn {
+      padding: 12px 24px;
+      font-size: 14px;
+      font-weight: 600;
+      color: white;
+      background: linear-gradient(135deg, var(--primary), #4f46e5);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .upload-status {
+      margin-top: 12px;
+      font-size: 13px;
+    }
+
+    .upload-status.success {
+      color: var(--success);
+    }
+
+    .upload-status.error {
+      color: var(--danger);
+    }
+
+    .upload-status.loading {
+      color: var(--warning);
+    }
+
+    /* Calendar */
+    .calendar-section {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      animation: fadeIn 0.5s ease 0.2s both;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .deadline-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 12px;
+    }
+
+    .deadline-card {
+      background: var(--bg-glass);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 15px;
+      transition: all 0.3s;
+    }
+
+    .deadline-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .deadline-card.urgent {
+      border-color: var(--danger);
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    .deadline-card.soon {
+      border-color: var(--warning);
+      background: rgba(245, 158, 11, 0.1);
+    }
+
+    .deadline-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .deadline-model {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .deadline-badge {
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      background: var(--success);
+      color: white;
+    }
+
+    .deadline-card.urgent .deadline-badge {
+      background: var(--danger);
+    }
+
+    .deadline-card.soon .deadline-badge {
+      background: var(--warning);
+      color: #000;
+    }
+
+    .deadline-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .deadline-date {
+      font-size: 13px;
+    }
+
+    .deadline-btn {
+      margin-top: 10px;
+      width: 100%;
+      padding: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      background: var(--bg-glass);
       border: 1px solid var(--border);
       border-radius: 8px;
       cursor: pointer;
-      transition: all 0.2s;
     }
-    .deadline-action:hover { background: rgba(255,255,255,0.1); }
 
     /* KPIs */
     .kpi-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 15px;
-      margin-bottom: 25px;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
     }
+
     .kpi-card {
       background: var(--bg-card);
+      backdrop-filter: blur(20px);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 20px;
+      border-radius: 14px;
+      padding: 18px;
       transition: all 0.3s;
+      animation: fadeIn 0.5s ease calc(0.3s + var(--i, 0) * 0.1s) both;
     }
-    .kpi-card:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0,0,0,0.2); }
-    .kpi-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; }
-    .kpi-value { font-size: 28px; font-weight: 800; }
-    .kpi-value.positive { color: var(--success); }
-    .kpi-value.negative { color: var(--danger); }
-    .kpi-value.neutral { color: var(--primary-light); }
-    .kpi-sub { font-size: 12px; color: var(--text-muted); margin-top: 5px; }
+
+    .kpi-card:hover {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    }
+
+    .kpi-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .kpi-value {
+      font-size: clamp(22px, 4vw, 28px);
+      font-weight: 800;
+    }
+
+    .kpi-value.positive {
+      color: var(--success);
+    }
+
+    .kpi-value.negative {
+      color: var(--danger);
+    }
+
+    .kpi-value.neutral {
+      color: var(--primary-light);
+    }
+
+    .kpi-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
 
     /* Charts */
     .charts-grid {
       display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 20px;
-      margin-bottom: 25px;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 15px;
+      margin-bottom: 20px;
     }
-    @media (max-width: 900px) { .charts-grid { grid-template-columns: 1fr; } }
+
+    @media (max-width: 800px) {
+      .charts-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
     .chart-card {
       background: var(--bg-card);
+      backdrop-filter: blur(20px);
       border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 25px;
+      border-radius: 16px;
+      padding: 20px;
+      animation: fadeIn 0.5s ease 0.5s both;
     }
-    .chart-title { font-size: 16px; font-weight: 600; margin-bottom: 20px; }
-    .chart-container { position: relative; height: 280px; }
+
+    .chart-container {
+      position: relative;
+      height: 250px;
+    }
+
+    @media (max-width: 600px) {
+      .chart-container {
+        height: 200px;
+      }
+    }
 
     /* Modal */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.8);
+      background: rgba(0, 0, 0, 0.8);
       backdrop-filter: blur(10px);
       display: flex;
       align-items: center;
@@ -215,353 +506,435 @@
       transition: all 0.3s;
       z-index: 1000;
     }
-    .modal-overlay.active { opacity: 1; visibility: visible; }
+
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
     .modal {
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: 20px;
-      padding: 30px;
-      max-width: 600px;
+      padding: 25px;
+      max-width: 550px;
       width: 100%;
-      max-height: 80vh;
+      max-height: 85vh;
       overflow-y: auto;
+      transform: scale(0.9);
+      transition: transform 0.3s;
     }
-    .modal h2 { font-size: 22px; margin-bottom: 15px; }
-    .modal-section { margin-bottom: 20px; }
-    .modal-section h4 { font-size: 14px; color: var(--text-muted); margin-bottom: 8px; }
-    .modal-section p, .modal-section li { font-size: 14px; line-height: 1.6; }
-    .modal-section ul { padding-left: 20px; }
+
+    .modal-overlay.active .modal {
+      transform: scale(1);
+    }
+
+    .modal h2 {
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+
+    .modal-section {
+      margin-bottom: 15px;
+    }
+
+    .modal-section h4 {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .modal-section p,
+    .modal-section li {
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .modal-section ul {
+      padding-left: 20px;
+    }
+
+    .modal-section a {
+      color: var(--primary-light);
+    }
+
     .modal-close {
       width: 100%;
-      padding: 14px;
+      padding: 12px;
       font-size: 14px;
       font-weight: 600;
-      color: var(--text);
+      color: white;
       background: var(--primary);
       border: none;
       border-radius: 10px;
       cursor: pointer;
     }
 
-    /* Footer links */
-    .footer-links {
+    /* Footer */
+    .footer {
       display: flex;
       justify-content: center;
-      gap: 30px;
-      padding: 20px;
+      gap: 20px;
+      padding: 15px;
       flex-wrap: wrap;
     }
-    .footer-links a {
+
+    .footer a {
       color: var(--text-muted);
       text-decoration: none;
-      font-size: 14px;
-      transition: color 0.2s;
+      font-size: 13px;
     }
-    .footer-links a:hover { color: var(--primary-light); }
+
+    .footer a:hover {
+      color: var(--primary-light);
+    }
+
+    /* Loading spinner */
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .container {
+        padding: 10px;
+      }
+
+      .header {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .header-actions {
+        justify-content: center;
+      }
+
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .deadline-grid {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
-<body>
+
+<body class="dark">
+  <div class="bg-depth">
+    <div class="bg-orb orb1"></div>
+    <div class="bg-orb orb2"></div>
+    <div class="bg-orb orb3"></div>
+  </div>
+
   <div class="container">
     <header class="header">
       <div>
-        <h1>📈 Dashboard Contable Pracmatik</h1>
-        <p>Sistema fiscal automatizado · Actualizado en tiempo real</p>
+        <h1>📈 Dashboard Contable</h1>
+        <p class="header-sub">Pracmatik · Datos en tiempo real</p>
       </div>
-      <div class="btn-group">
-        <a href="index.html" class="btn btn-success">➕ Nuevo Registro</a>
-        <a href="https://docs.google.com/spreadsheets/d/1jd6ahi9HUk1HAPDO2jby9rvC2RXNtGG0EzAeY7ijOss/edit" target="_blank" class="btn">📊 Google Sheets</a>
-        <a href="https://drive.google.com/drive/u/1/folders/1lpnoCm43Nw3yz4En_sa9ZSDC1vCH4e80" target="_blank" class="btn">📁 Google Drive</a>
+      <div class="header-actions">
+        <a href="index.html" class="btn btn-primary">➕ Nuevo</a>
+        <a href="https://docs.google.com/spreadsheets/d/1jd6ahi9HUk1HAPDO2jby9rvC2RXNtGG0EzAeY7ijOss/edit"
+          target="_blank" class="btn">📊 Sheets</a>
+        <button class="theme-toggle" onclick="toggleTheme()" title="Cambiar tema"></button>
       </div>
     </header>
 
-    <!-- Upload Section -->
-    <section class="upload-section" id="uploadZone">
+    <!-- Upload -->
+    <section class="upload-zone" id="uploadZone">
       <h3>📄 Subir Factura o Ticket</h3>
-      <p>Arrastra aquí un PDF o imagen. La IA extraerá los datos automáticamente.</p>
-      <input type="file" id="fileInput" class="upload-input" accept=".pdf,.jpg,.jpeg,.png,.webp">
-      <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
-        📤 Seleccionar archivo
-      </button>
+      <p>Arrastra PDF o imagen. La IA extraerá los datos automáticamente.</p>
+      <input type="file" id="fileInput" style="display:none" accept=".pdf,.jpg,.jpeg,.png,.webp">
+      <button class="upload-btn" onclick="document.getElementById('fileInput').click()">📤 Seleccionar archivo</button>
       <div id="uploadStatus" class="upload-status"></div>
     </section>
 
-    <!-- Calendar Section -->
+    <!-- Calendar -->
     <section class="calendar-section">
-      <h3 class="calendar-title">📅 Calendario Fiscal 2025</h3>
-      <div class="calendar-grid" id="calendarGrid"></div>
+      <h3 class="section-title">📅 Próximos Vencimientos Fiscales</h3>
+      <div class="deadline-grid" id="deadlineGrid"></div>
     </section>
 
     <!-- KPIs -->
     <div class="kpi-grid">
-      <div class="kpi-card">
-        <div class="kpi-label">Ingresos (Año)</div>
-        <div class="kpi-value positive" id="totalIngresos">0 €</div>
-        <div class="kpi-sub">Base imponible facturada</div>
+      <div class="kpi-card" style="--i:0">
+        <div class="kpi-label">Ingresos</div>
+        <div class="kpi-value positive" id="kpiIngresos"><span class="spinner"></span></div>
+        <div class="kpi-sub">Base imponible</div>
       </div>
-      <div class="kpi-card">
-        <div class="kpi-label">Gastos (Año)</div>
-        <div class="kpi-value negative" id="totalGastos">0 €</div>
-        <div class="kpi-sub">Gastos deducibles</div>
+      <div class="kpi-card" style="--i:1">
+        <div class="kpi-label">Gastos</div>
+        <div class="kpi-value negative" id="kpiGastos"><span class="spinner"></span></div>
+        <div class="kpi-sub">Deducibles</div>
       </div>
-      <div class="kpi-card">
-        <div class="kpi-label">IVA a Liquidar</div>
-        <div class="kpi-value neutral" id="ivaLiquidar">0 €</div>
-        <div class="kpi-sub">Repercutido - Soportado</div>
+      <div class="kpi-card" style="--i:2">
+        <div class="kpi-label">IVA Liquidar</div>
+        <div class="kpi-value neutral" id="kpiIva"><span class="spinner"></span></div>
+        <div class="kpi-sub">Mod. 303</div>
       </div>
-      <div class="kpi-card">
+      <div class="kpi-card" style="--i:3">
         <div class="kpi-label">IRPF Retenido</div>
-        <div class="kpi-value neutral" id="irpfRetenido">0 €</div>
-        <div class="kpi-sub">Retenciones a tu favor</div>
+        <div class="kpi-value neutral" id="kpiIrpf"><span class="spinner"></span></div>
+        <div class="kpi-sub">A tu favor</div>
       </div>
-      <div class="kpi-card">
-        <div class="kpi-label">Beneficio Neto</div>
-        <div class="kpi-value positive" id="beneficioNeto">0 €</div>
-        <div class="kpi-sub">Ingresos - Gastos</div>
+      <div class="kpi-card" style="--i:4">
+        <div class="kpi-label">Beneficio</div>
+        <div class="kpi-value positive" id="kpiBeneficio"><span class="spinner"></span></div>
+        <div class="kpi-sub">Neto</div>
       </div>
     </div>
 
     <!-- Charts -->
     <div class="charts-grid">
       <div class="chart-card">
-        <h3 class="chart-title">📊 Evolución Mensual</h3>
+        <h3 class="section-title">📊 Evolución Mensual</h3>
         <div class="chart-container"><canvas id="monthlyChart"></canvas></div>
       </div>
       <div class="chart-card">
-        <h3 class="chart-title">🥧 Distribución Gastos</h3>
-        <div class="chart-container"><canvas id="expensesChart"></canvas></div>
+        <h3 class="section-title">🥧 Distribución</h3>
+        <div class="chart-container"><canvas id="pieChart"></canvas></div>
       </div>
     </div>
 
-    <!-- Footer -->
-    <div class="footer-links">
-      <a href="https://sede.agenciatributaria.gob.es" target="_blank">🏛️ Sede AEAT</a>
-      <a href="https://sede.seg-social.gob.es" target="_blank">👤 Seguridad Social</a>
-      <a href="index.html">📝 Formulario Manual</a>
-    </div>
+    <footer class="footer">
+      <a href="https://sede.agenciatributaria.gob.es" target="_blank">🏛️ AEAT</a>
+      <a href="https://sede.seg-social.gob.es" target="_blank">👤 Seg. Social</a>
+      <a href="index.html">📝 Formulario</a>
+    </footer>
   </div>
 
   <!-- Modal -->
-  <div class="modal-overlay" id="helpModal">
+  <div class="modal-overlay" id="modal">
     <div class="modal">
-      <h2 id="modalTitle">Modelo 303 - IVA</h2>
+      <h2 id="modalTitle">Info</h2>
       <div id="modalContent"></div>
       <button class="modal-close" onclick="closeModal()">Entendido</button>
     </div>
   </div>
 
   <script>
+    // Config
+    const SHEETS_ID = '1jd6ahi9HUk1HAPDO2jby9rvC2RXNtGG0EzAeY7ijOss';
     const WEBHOOK_UPLOAD = 'https://hooks.pracmatik.com/webhook/contabilidad-upload';
 
-    // Fiscal deadlines
-    const deadlines = [
-      { modelo: '303', desc: 'IVA Trimestral', trimestre: '4T-2024', fecha: new Date(2025, 0, 30), tipo: 'iva' },
-      { modelo: '130', desc: 'IRPF Estimación Directa', trimestre: '4T-2024', fecha: new Date(2025, 0, 30), tipo: 'irpf' },
-      { modelo: '303', desc: 'IVA Trimestral', trimestre: '1T-2025', fecha: new Date(2025, 3, 21), tipo: 'iva' },
-      { modelo: '130', desc: 'IRPF Estimación Directa', trimestre: '1T-2025', fecha: new Date(2025, 3, 21), tipo: 'irpf' },
-      { modelo: '303', desc: 'IVA Trimestral', trimestre: '2T-2025', fecha: new Date(2025, 6, 21), tipo: 'iva' },
-      { modelo: '130', desc: 'IRPF Estimación Directa', trimestre: '2T-2025', fecha: new Date(2025, 6, 21), tipo: 'irpf' },
-      { modelo: '303', desc: 'IVA Trimestral', trimestre: '3T-2025', fecha: new Date(2025, 9, 20), tipo: 'iva' },
-      { modelo: '130', desc: 'IRPF Estimación Directa', trimestre: '3T-2025', fecha: new Date(2025, 9, 20), tipo: 'irpf' },
-      { modelo: '303', desc: 'IVA Trimestral', trimestre: '4T-2025', fecha: new Date(2026, 0, 30), tipo: 'iva' },
-      { modelo: '130', desc: 'IRPF Estimación Directa', trimestre: '4T-2025', fecha: new Date(2026, 0, 30), tipo: 'irpf' },
-    ];
+    // Theme
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    document.body.className = savedTheme;
+    function toggleTheme() {
+      const newTheme = document.body.classList.contains('dark') ? 'light' : 'dark';
+      document.body.className = newTheme;
+      localStorage.setItem('theme', newTheme);
+      updateCharts();
+    }
 
-    // Render calendar
+    // Format currency
+    const fmt = n => new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n);
+
+    // Fetch data from Google Sheets (public CSV export)
+    async function fetchSheetData(sheetName) {
+      try {
+        const url = `https://docs.google.com/spreadsheets/d/${SHEETS_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
+        const res = await fetch(url);
+        const text = await res.text();
+        const json = JSON.parse(text.substring(47, text.length - 2));
+        const cols = json.table.cols.map(c => c.label);
+        const rows = json.table.rows.map(r => {
+          const obj = {};
+          r.c.forEach((cell, i) => { obj[cols[i]] = cell ? (cell.v || '') : ''; });
+          return obj;
+        });
+        return rows;
+      } catch (e) {
+        console.error('Error fetching', sheetName, e);
+        return [];
+      }
+    }
+
+    // Load all data
+    async function loadData() {
+      const [ingresos, gastos, compras, pagos] = await Promise.all([
+        fetchSheetData('Ingresos'),
+        fetchSheetData('Gastos'),
+        fetchSheetData('Compras'),
+        fetchSheetData('Pagos')
+      ]);
+
+      const sumBase = arr => arr.reduce((s, r) => s + (parseFloat(r.Base_Imponible) || 0), 0);
+      const sumIva = arr => arr.reduce((s, r) => s + (parseFloat(r.IVA_Cuota) || 0), 0);
+      const sumIrpf = arr => arr.reduce((s, r) => s + (parseFloat(r.IRPF_Cuota) || 0), 0);
+
+      const totalIngresos = sumBase(ingresos);
+      const totalGastos = sumBase(gastos) + sumBase(compras) + sumBase(pagos);
+      const ivaRepercutido = sumIva(ingresos);
+      const ivaSoportado = sumIva(gastos) + sumIva(compras);
+      const irpfRetenido = sumIrpf(ingresos);
+      const beneficio = totalIngresos - totalGastos;
+
+      document.getElementById('kpiIngresos').textContent = fmt(totalIngresos);
+      document.getElementById('kpiGastos').textContent = fmt(totalGastos);
+      document.getElementById('kpiIva').textContent = fmt(ivaRepercutido - ivaSoportado);
+      document.getElementById('kpiIrpf').textContent = fmt(irpfRetenido);
+      document.getElementById('kpiBeneficio').textContent = fmt(beneficio);
+
+      // Monthly data
+      const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+      const ingByMonth = new Array(12).fill(0);
+      const gasByMonth = new Array(12).fill(0);
+
+      ingresos.forEach(r => {
+        const m = parseInt((r.Fecha || '').split('/')[1]) - 1;
+        if (m >= 0 && m < 12) ingByMonth[m] += parseFloat(r.Base_Imponible) || 0;
+      });
+      [...gastos, ...compras, ...pagos].forEach(r => {
+        const m = parseInt((r.Fecha || '').split('/')[1]) - 1;
+        if (m >= 0 && m < 12) gasByMonth[m] += parseFloat(r.Base_Imponible) || parseFloat(r.Total_Factura) || 0;
+      });
+
+      window.chartData = { months, ingByMonth, gasByMonth, gastos: sumBase(gastos), compras: sumBase(compras), pagos: sumBase(pagos) };
+      updateCharts();
+    }
+
+    let monthlyChart, pieChart;
+    function updateCharts() {
+      const isDark = document.body.classList.contains('dark');
+      const textColor = isDark ? '#94a3b8' : '#64748b';
+      const gridColor = isDark ? 'rgba(148,163,184,0.1)' : 'rgba(0,0,0,0.05)';
+      const d = window.chartData || { months: [], ingByMonth: [], gasByMonth: [], gastos: 0, compras: 0, pagos: 0 };
+
+      if (monthlyChart) monthlyChart.destroy();
+      if (pieChart) pieChart.destroy();
+
+      monthlyChart = new Chart(document.getElementById('monthlyChart'), {
+        type: 'bar',
+        data: {
+          labels: d.months,
+          datasets: [
+            { label: 'Ingresos', data: d.ingByMonth, backgroundColor: 'rgba(16,185,129,0.7)', borderRadius: 4 },
+            { label: 'Gastos', data: d.gasByMonth, backgroundColor: 'rgba(239,68,68,0.7)', borderRadius: 4 }
+          ]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          interaction: { intersect: false, mode: 'index' },
+          plugins: {
+            legend: { position: 'bottom', labels: { color: textColor, padding: 15 } },
+            tooltip: { backgroundColor: 'rgba(0,0,0,0.8)', titleFont: { size: 13 }, bodyFont: { size: 12 }, padding: 12 }
+          },
+          scales: {
+            x: { grid: { color: gridColor }, ticks: { color: textColor } },
+            y: { grid: { color: gridColor }, ticks: { color: textColor, callback: v => fmt(v) } }
+          }
+        }
+      });
+
+      pieChart = new Chart(document.getElementById('pieChart'), {
+        type: 'doughnut',
+        data: {
+          labels: ['Gastos', 'Compras', 'Pagos'],
+          datasets: [{ data: [d.gastos, d.compras, d.pagos], backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6'], borderWidth: 0 }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { color: textColor, padding: 12 } },
+            tooltip: { backgroundColor: 'rgba(0,0,0,0.8)', callbacks: { label: ctx => ctx.label + ': ' + fmt(ctx.raw) } }
+          },
+          cutout: '60%'
+        }
+      });
+    }
+
+    // Calendar
     function renderCalendar() {
       const now = new Date();
-      const grid = document.getElementById('calendarGrid');
-      const futureDeadlines = deadlines.filter(d => d.fecha > now).slice(0, 4);
-      
-      grid.innerHTML = futureDeadlines.map(d => {
-        const days = Math.ceil((d.fecha - now) / (1000 * 60 * 60 * 24));
-        const urgency = days <= 7 ? 'urgent' : days <= 30 ? 'soon' : 'ok';
-        return `
-          <div class="deadline-card ${urgency}">
-            <div class="deadline-header">
-              <span class="deadline-model">Mod. ${d.modelo}</span>
-              <span class="deadline-days">${days} días</span>
-            </div>
-            <div class="deadline-desc">${d.desc} - ${d.trimestre}</div>
-            <div class="deadline-date">📅 ${d.fecha.toLocaleDateString('es-ES', {day: 'numeric', month: 'long', year: 'numeric'})}</div>
-            <button class="deadline-action" onclick="showHelp('${d.modelo}', '${d.tipo}', '${d.trimestre}')">
-              ℹ️ ¿Qué debo hacer?
-            </button>
-          </div>
-        `;
+      const deadlines = [
+        { modelo: '303', desc: 'IVA', trim: '4T-2024', fecha: new Date(2025, 0, 30), tipo: 'iva' },
+        { modelo: '130', desc: 'IRPF', trim: '4T-2024', fecha: new Date(2025, 0, 30), tipo: 'irpf' },
+        { modelo: '303', desc: 'IVA', trim: '1T-2025', fecha: new Date(2025, 3, 21), tipo: 'iva' },
+        { modelo: '130', desc: 'IRPF', trim: '1T-2025', fecha: new Date(2025, 3, 21), tipo: 'irpf' },
+        { modelo: '303', desc: 'IVA', trim: '2T-2025', fecha: new Date(2025, 6, 21), tipo: 'iva' },
+        { modelo: '130', desc: 'IRPF', trim: '2T-2025', fecha: new Date(2025, 6, 21), tipo: 'irpf' },
+      ];
+      const upcoming = deadlines.filter(d => d.fecha > now).slice(0, 4);
+      document.getElementById('deadlineGrid').innerHTML = upcoming.map(d => {
+        const days = Math.ceil((d.fecha - now) / 86400000);
+        const urg = days <= 7 ? 'urgent' : days <= 30 ? 'soon' : '';
+        return `<div class="deadline-card ${urg}">
+          <div class="deadline-header"><span class="deadline-model">Mod. ${d.modelo}</span><span class="deadline-badge">${days}d</span></div>
+          <div class="deadline-desc">${d.desc} - ${d.trim}</div>
+          <div class="deadline-date">📅 ${d.fecha.toLocaleDateString('es-ES')}</div>
+          <button class="deadline-btn" onclick="showHelp('${d.modelo}')">ℹ️ ¿Qué hacer?</button>
+        </div>`;
       }).join('');
     }
 
-    // Help modal
-    function showHelp(modelo, tipo, trimestre) {
-      const modal = document.getElementById('helpModal');
-      const title = document.getElementById('modalTitle');
-      const content = document.getElementById('modalContent');
-      
+    function showHelp(modelo) {
       const info = {
-        '303': {
-          title: `Modelo 303 - IVA ${trimestre}`,
-          content: `
-            <div class="modal-section">
-              <h4>📋 Qué es</h4>
-              <p>Declaración trimestral de IVA. Pagas la diferencia entre el IVA que has cobrado (repercutido) y el IVA que has pagado (soportado).</p>
-            </div>
-            <div class="modal-section">
-              <h4>📊 Datos que necesitas del Dashboard</h4>
-              <ul>
-                <li><strong>Casilla 01:</strong> Base imponible de INGRESOS del trimestre</li>
-                <li><strong>Casilla 03:</strong> IVA Repercutido (suma de IVA_Cuota de ingresos)</li>
-                <li><strong>Casilla 28:</strong> Base imponible de GASTOS del trimestre</li>
-                <li><strong>Casilla 29:</strong> IVA Soportado (suma de IVA_Cuota de gastos)</li>
-              </ul>
-            </div>
-            <div class="modal-section">
-              <h4>🔗 Dónde presentarlo</h4>
-              <p><a href="https://sede.agenciatributaria.gob.es/Sede/iva/modelo-303.html" target="_blank" style="color: var(--primary-light);">Sede AEAT - Modelo 303</a></p>
-            </div>
-          `
-        },
-        '130': {
-          title: `Modelo 130 - IRPF ${trimestre}`,
-          content: `
-            <div class="modal-section">
-              <h4>📋 Qué es</h4>
-              <p>Pago fraccionado del IRPF para autónomos en estimación directa. Pagas el 20% del beneficio trimestral.</p>
-            </div>
-            <div class="modal-section">
-              <h4>📊 Datos que necesitas del Dashboard</h4>
-              <ul>
-                <li><strong>Casilla 01:</strong> Total INGRESOS acumulados en el año</li>
-                <li><strong>Casilla 02:</strong> Total GASTOS acumulados en el año</li>
-                <li><strong>Casilla 03:</strong> Rendimiento = Ingresos - Gastos</li>
-                <li><strong>Casilla 04:</strong> 20% del rendimiento</li>
-                <li><strong>Casilla 05:</strong> Retenciones IRPF acumuladas (a tu favor)</li>
-              </ul>
-            </div>
-            <div class="modal-section">
-              <h4>🔗 Dónde presentarlo</h4>
-              <p><a href="https://sede.agenciatributaria.gob.es/Sede/irpf/modelo-130.html" target="_blank" style="color: var(--primary-light);">Sede AEAT - Modelo 130</a></p>
-            </div>
-          `
-        }
+        '303': { title: 'Modelo 303 - IVA', content: '<p>Casilla 01: Base ingresos<br>Casilla 03: IVA repercutido<br>Casilla 28: Base gastos<br>Casilla 29: IVA soportado</p><p><a href="https://sede.agenciatributaria.gob.es/Sede/iva/modelo-303.html" target="_blank">Presentar en AEAT →</a></p>' },
+        '130': { title: 'Modelo 130 - IRPF', content: '<p>Casilla 01: Ingresos acumulados<br>Casilla 02: Gastos acumulados<br>Casilla 04: 20% del beneficio<br>Casilla 05: Retenciones</p><p><a href="https://sede.agenciatributaria.gob.es/Sede/irpf/modelo-130.html" target="_blank">Presentar en AEAT →</a></p>' }
       };
-      
-      const data = info[modelo] || info['303'];
-      title.textContent = data.title;
-      content.innerHTML = data.content;
-      modal.classList.add('active');
+      const d = info[modelo];
+      document.getElementById('modalTitle').textContent = d.title;
+      document.getElementById('modalContent').innerHTML = d.content;
+      document.getElementById('modal').classList.add('active');
     }
+    function closeModal() { document.getElementById('modal').classList.remove('active'); }
 
-    function closeModal() {
-      document.getElementById('helpModal').classList.remove('active');
-    }
-
-    // File upload
+    // Upload
     const uploadZone = document.getElementById('uploadZone');
     const fileInput = document.getElementById('fileInput');
     const uploadStatus = document.getElementById('uploadStatus');
 
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => {
-      uploadZone.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); });
-    });
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(e => uploadZone.addEventListener(e, ev => { ev.preventDefault(); ev.stopPropagation(); }));
     uploadZone.addEventListener('dragover', () => uploadZone.classList.add('dragover'));
     uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
-    uploadZone.addEventListener('drop', e => {
-      uploadZone.classList.remove('dragover');
-      const file = e.dataTransfer.files[0];
-      if (file) handleFile(file);
-    });
-    fileInput.addEventListener('change', e => {
-      if (e.target.files[0]) handleFile(e.target.files[0]);
-    });
+    uploadZone.addEventListener('drop', e => { uploadZone.classList.remove('dragover'); if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); });
+    fileInput.addEventListener('change', e => { if (e.target.files[0]) handleFile(e.target.files[0]); });
 
     async function handleFile(file) {
-      uploadStatus.textContent = '⏳ Procesando con IA...';
-      uploadStatus.className = 'upload-status';
-      
+      uploadStatus.innerHTML = '<span class="spinner"></span> Procesando con IA...';
+      uploadStatus.className = 'upload-status loading';
       const reader = new FileReader();
-      reader.onload = async (e) => {
-        const base64 = e.target.result.split(',')[1];
+      reader.onload = async e => {
         try {
-          const response = await fetch(WEBHOOK_UPLOAD, {
+          const res = await fetch(WEBHOOK_UPLOAD, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              file_data: base64,
-              file_name: file.name,
-              file_type: file.type
-            })
+            body: JSON.stringify({ file_data: e.target.result.split(',')[1], file_name: file.name, file_type: file.type })
           });
-          
-          if (response.ok) {
-            const result = await response.json();
-            if (result.success) {
-              uploadStatus.textContent = `✅ Registrado: ${result.ID_Unico} - ${result.Tercero_Nombre} - ${result.Total_Factura}€`;
-              uploadStatus.className = 'upload-status success';
-            } else {
-              throw new Error('Error al procesar');
-            }
-          } else {
-            throw new Error('Error del servidor');
-          }
+          const data = await res.json();
+          if (data.success) {
+            uploadStatus.textContent = `✅ ${data.ID_Unico} - ${data.Tercero_Nombre} - ${fmt(data.Total_Factura)}`;
+            uploadStatus.className = 'upload-status success';
+            loadData();
+          } else throw new Error('Error');
         } catch (err) {
-          uploadStatus.textContent = '❌ Error: ' + err.message;
+          uploadStatus.textContent = '❌ Error al procesar';
           uploadStatus.className = 'upload-status error';
         }
       };
       reader.readAsDataURL(file);
     }
 
-    // Demo data
-    const demoData = {
-      ingresos: 18500,
-      gastos: 5200,
-      ivaRepercutido: 3885,
-      ivaSoportado: 1092,
-      irpfRetenido: 2775
-    };
-
-    document.getElementById('totalIngresos').textContent = demoData.ingresos.toLocaleString('es-ES') + ' €';
-    document.getElementById('totalGastos').textContent = demoData.gastos.toLocaleString('es-ES') + ' €';
-    document.getElementById('ivaLiquidar').textContent = (demoData.ivaRepercutido - demoData.ivaSoportado).toLocaleString('es-ES') + ' €';
-    document.getElementById('irpfRetenido').textContent = demoData.irpfRetenido.toLocaleString('es-ES') + ' €';
-    document.getElementById('beneficioNeto').textContent = (demoData.ingresos - demoData.gastos).toLocaleString('es-ES') + ' €';
-
-    // Charts
-    new Chart(document.getElementById('monthlyChart'), {
-      type: 'bar',
-      data: {
-        labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
-        datasets: [
-          { label: 'Ingresos', data: [1500, 2200, 1800, 2500, 1900, 2100, 1600, 1200, 1800, 1900, 0, 0], backgroundColor: 'rgba(16, 185, 129, 0.6)', borderRadius: 5 },
-          { label: 'Gastos', data: [450, 520, 380, 620, 480, 510, 420, 350, 490, 480, 500, 0], backgroundColor: 'rgba(239, 68, 68, 0.6)', borderRadius: 5 }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8' } } },
-        scales: {
-          x: { grid: { color: 'rgba(148,163,184,0.1)' }, ticks: { color: '#94a3b8' } },
-          y: { grid: { color: 'rgba(148,163,184,0.1)' }, ticks: { color: '#94a3b8' } }
-        }
-      }
-    });
-
-    new Chart(document.getElementById('expensesChart'), {
-      type: 'doughnut',
-      data: {
-        labels: ['Suministros', 'Software', 'Material', 'Servicios', 'Otros'],
-        datasets: [{ data: [850, 1400, 650, 1500, 800], backgroundColor: ['#6366f1','#10b981','#f59e0b','#3b82f6','#94a3b8'], borderWidth: 0 }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8' } } },
-        cutout: '60%'
-      }
-    });
-
+    // Init
     renderCalendar();
+    loadData();
   </script>
 </body>
+
 </html>
