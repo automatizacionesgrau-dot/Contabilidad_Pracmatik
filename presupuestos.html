@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presupuestos - CRM Pracmatik</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+        }
+
+        .dark {
+            --bg-main: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.9);
+            --bg-glass: rgba(255, 255, 255, 0.05);
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: rgba(148, 163, 184, 0.2);
+        }
+
+        .light {
+            --bg-main: #f1f5f9;
+            --bg-card: rgba(255, 255, 255, 0.95);
+            --bg-glass: rgba(0, 0, 0, 0.03);
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-main);
+            min-height: 100vh;
+            color: var(--text);
+            transition: all 0.4s;
+        }
+
+        .bg-depth {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .bg-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.25;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .bg-orb.o1 {
+            width: 500px;
+            height: 500px;
+            background: var(--primary);
+            top: -150px;
+            left: -100px;
+        }
+
+        .bg-orb.o2 {
+            width: 400px;
+            height: 400px;
+            background: var(--success);
+            bottom: -100px;
+            right: -100px;
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translate(0, 0);
+            }
+
+            50% {
+                transform: translate(-30px, 30px);
+            }
+        }
+
+        .light .bg-orb {
+            opacity: 0.1;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .nav a:hover {
+            background: var(--bg-glass);
+            color: var(--text);
+        }
+
+        .nav a.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 800;
+        }
+
+        .btn {
+            padding: 14px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            background: var(--primary);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-success {
+            background: var(--success);
+        }
+
+        .btn-secondary {
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        /* Presupuestos Grid */
+        .presupuestos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .presupuesto-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .presupuesto-card:hover {
+            transform: translateY(-3px) scale(1.01);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.2);
+            border-color: var(--primary);
+        }
+
+        .presupuesto-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .presupuesto-numero {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        .presupuesto-estado {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+
+        .presupuesto-estado.borrador {
+            background: rgba(148, 163, 184, 0.2);
+            color: var(--text-muted);
+        }
+
+        .presupuesto-estado.enviado {
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--info);
+        }
+
+        .presupuesto-estado.aceptado {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .presupuesto-estado.rechazado {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+
+        .presupuesto-cliente {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .presupuesto-titulo {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .presupuesto-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: var(--text-muted);
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .presupuesto-total {
+            font-weight: 700;
+            color: var(--success);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 900px;
+            margin: 40px 0;
+            animation: modalIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(20px);
+            }
+        }
+
+        .modal-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .close-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: var(--bg-glass);
+            border-radius: 10px;
+            color: var(--text);
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s;
+        }
+
+        .close-btn:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        .modal-body {
+            padding: 24px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .modal-footer {
+            padding: 24px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        /* Form */
+        .form-section {
+            margin-bottom: 24px;
+        }
+
+        .form-section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 14px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            outline: none;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* Items Table */
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 16px;
+        }
+
+        .items-table th {
+            text-align: left;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            padding: 12px;
+            background: var(--bg-glass);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .items-table td {
+            padding: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .items-table input,
+        .items-table textarea {
+            width: 100%;
+            padding: 10px;
+            font-size: 13px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-family: inherit;
+        }
+
+        .items-table .importe-input {
+            width: 100px;
+            text-align: right;
+        }
+
+        .add-item-btn {
+            padding: 8px 16px;
+            font-size: 12px;
+            background: var(--bg-glass);
+            border: 1px dashed var(--border);
+            border-radius: 8px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .add-item-btn:hover {
+            background: var(--primary);
+            border-style: solid;
+            color: white;
+        }
+
+        .remove-btn {
+            width: 28px;
+            height: 28px;
+            border: none;
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .remove-btn:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Totals */
+        .totals-section {
+            background: var(--bg-glass);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 24px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 14px;
+        }
+
+        .total-row.grand {
+            font-size: 18px;
+            font-weight: 700;
+            border-top: 2px solid var(--border);
+            margin-top: 8px;
+            padding-top: 16px;
+        }
+
+        /* Status */
+        .status-msg {
+            padding: 14px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .status-msg.success {
+            display: block;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+
+        .status-msg.error {
+            display: block;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+        }
+
+        /* Preview */
+        .preview-section {
+            background: white;
+            color: #000;
+            padding: 40px;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .preview-header {
+            text-align: center;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+        }
+
+        .preview-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            font-size: 12px;
+        }
+
+        .preview-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+
+        .preview-table th {
+            text-align: left;
+            font-weight: 700;
+            padding: 10px;
+            border-bottom: 2px solid #000;
+        }
+
+        .preview-table td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            vertical-align: top;
+        }
+
+        .preview-legal {
+            font-size: 8px;
+            color: #666;
+            line-height: 1.4;
+            margin-top: 40px;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+        }
+
+        .preview-legal strong {
+            color: #000;
+        }
+    </style>
+    <script src="auth.js"></script>
+</head>
+
+<body class="dark">
+    <div class="bg-depth">
+        <div class="bg-orb o1"></div>
+        <div class="bg-orb o2"></div>
+    </div>
+
+    <div class="container">
+        <nav class="nav">
+            <a href="crm.html">CRM</a>
+            <a href="clientes.html">Clientes</a>
+            <a href="leads.html">Leads</a>
+            <a href="proyectos.html">Proyectos</a>
+            <a href="comercial.html">Comercial</a>
+            <a href="dashboard.html">Contabilidad</a>
+            <a href="presupuestos.html" class="active">Presupuestos</a>
+            <a href="config.html">Config</a>
+        </nav>
+
+        <header class="header">
+            <h1>Presupuestos</h1>
+            <button class="btn" onclick="openModal()">+ Nuevo Presupuesto</button>
+        </header>
+
+        <div id="statusMsg" class="status-msg"></div>
+
+        <div id="presupuestosGrid" class="presupuestos-grid">
+            <div class="empty-state">
+                <div class="empty-state-icon">◎</div>
+                <p>No hay presupuestos. Crea el primero.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Crear/Editar Presupuesto -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Nuevo Presupuesto</h2>
+                <button class="close-btn" onclick="closeModal()">×</button>
+            </div>
+            <form id="presupuestoForm" onsubmit="savePresupuesto(event)">
+                <div class="modal-body">
+                    <input type="hidden" id="presupuestoId">
+
+                    <div class="form-section">
+                        <div class="form-section-title">Datos Generales</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Cliente / Lead</label>
+                                <input type="text" name="cliente" id="clienteInput" required
+                                    placeholder="Nombre del cliente">
+                            </div>
+                            <div class="form-group">
+                                <label>Título del Proyecto</label>
+                                <input type="text" name="titulo" required
+                                    placeholder="Ej: Agent Redactor d'Actes de Visita d'Obra">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Número Propuesta</label>
+                                <input type="text" id="numeroPropuesta" readonly
+                                    style="opacity: 0.7; cursor: not-allowed;">
+                            </div>
+                            <div class="form-group">
+                                <label>Estado</label>
+                                <select name="estado">
+                                    <option value="BORRADOR">Borrador</option>
+                                    <option value="ENVIADO">Enviado</option>
+                                    <option value="ACEPTADO">Aceptado</option>
+                                    <option value="RECHAZADO">Rechazado</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-section-title">Implementación y Setup</div>
+                        <table class="items-table" id="implementacionTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 25%">Concepto / Fase</th>
+                                    <th style="width: 55%">Descripción Detallada</th>
+                                    <th style="width: 15%">Importe (€)</th>
+                                    <th style="width: 5%"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="implementacionItems">
+                            </tbody>
+                        </table>
+                        <button type="button" class="add-item-btn" onclick="addImplementacionItem()">+ Añadir
+                            Concepto</button>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-section-title">Fee Mensual</div>
+                        <table class="items-table" id="feeTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 25%">Concepto Mensual</th>
+                                    <th style="width: 55%">Qué Incluye</th>
+                                    <th style="width: 15%">Importe (€)</th>
+                                    <th style="width: 5%"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="feeItems">
+                            </tbody>
+                        </table>
+                        <button type="button" class="add-item-btn" onclick="addFeeItem()">+ Añadir Concepto</button>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-section-title">Pagos</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Primer Pago (incluye primera mensualidad)</label>
+                                <input type="number" name="primerPago" step="0.01" placeholder="0.00">
+                            </div>
+                            <div class="form-group">
+                                <label>Último Pago (Sin IVA)</label>
+                                <input type="number" name="ultimoPago" step="0.01" placeholder="0.00">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="totals-section">
+                        <div class="total-row">
+                            <span>Total Implementación (Sin IVA)</span>
+                            <span id="totalImplementacion">0,00 €</span>
+                        </div>
+                        <div class="total-row">
+                            <span>Total Mensual (Sin IVA)</span>
+                            <span id="totalMensual">0,00 €</span>
+                        </div>
+                        <div class="total-row grand">
+                            <span>TOTAL IMPLEMENTACIÓN</span>
+                            <span id="totalGrand">0,00 €</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+                    <button type="button" class="btn btn-secondary" onclick="previewPresupuesto()">Vista Previa</button>
+                    <button type="submit" class="btn btn-success">Guardar Presupuesto</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Vista Previa -->
+    <div id="previewModal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h2>Vista Previa del Presupuesto</h2>
+                <button class="close-btn" onclick="closePreview()">×</button>
+            </div>
+            <div class="modal-body" id="previewContent">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closePreview()">Cerrar</button>
+                <button class="btn btn-success" onclick="generatePDF()">Generar PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SHEETS_ID = '1X-wjUgctzNOiDu7Y7pposZqctCGZQGxbACpYkYWyIRc';
+        const WEBHOOK = 'https://hooks.pracmatik.com/webhook/crm-presupuesto';
+        let allPresupuestos = [];
+        let presupuestosHoy = 0;
+
+        const LETRA_PEQUENA = `*Propiedad de Datos y Privacidad (RGPD)
+Los datos, planos y documentos son propiedad exclusiva del CLIENTE. Pracmatik actúa como Encargado del Tratamiento, garantizando que NO se utilizarán datos confidenciales para el entrenamiento de modelos fundacionales públicos. Los datos solo se ceden a proveedores de infraestructura necesarios (Google/OpenAI/n8n) bajo estrictos acuerdos de confidencialidad. Los costes de almacenamiento nube y licencias de software del cliente son responsabilidad del CLIENTE.
+
+*Infraestructura y Dependencias Tecnológicas
+El servicio opera sobre una infraestructura en la nube. El CLIENTE es responsable de asegurar la sincronización entre su servidor físico (NAS) y la nube. Al basarse en APIs de terceros (OpenAI, Google, n8n), Pracmatik gestionará incidencias con máxima diligencia, pero no se hace responsable de caídas globales, latencias de respuesta de las APIs, ni cambios estructurales en las políticas de terceros (ej: bloqueo de cuentas de OpenAI).
+
+*Validación Humana y Naturaleza de la IA
+Esta herramienta es un asistente de productividad probabilístico, no un auditor vinculante. A pesar de usar técnicas RAG para minimizar alucinaciones, la IA puede generar inexactitudes. El CLIENTE acepta expresamente su obligación de verificar y validar manualmente todos los datos críticos (precios, mediciones, normativas) antes de su uso comercial. Pracmatik no asume responsabilidad por errores no detectados en dicha supervisión.
+
+*Condiciones Económicas y de Servicio
+Mantenimiento: Incluye soporte, monitorización y bolsa de 3h de ajustes (no acumulables). Suspensión por Impago: Dado que el servicio conlleva costes directos de computación para Pracmatik, el servicio se suspenderá automáticamente si no se recibe el pago dentro de los 7 días naturales posteriores al vencimiento de la factura (Kill Switch).
+Fair Use: La cuota incluye soporte, monitorización y una bolsa de 3 horas mensuales (no acumulables) para ajustes y calibración del sistema actual (ej: afinar respuestas). La implementación de nuevas funcionalidades o cambios estructurales no previstos se valorará bajo presupuesto independiente. Se cubre un volumen estándar de aprox. 700 presupuestos/mes (con una carga computacional media estándar). Si se supera este volumen o si los costes de APIs de terceros aumentan >10%, se revisará la tarifa con preaviso de 30 días.
+
+VINCULACIÓN CONTRACTUAL: La aceptación de este presupuesto implica la adhesión incondicional a los términos y condiciones del CONTRATO MARCO DE PRESTACIÓN DE SERVICIOS firmado entre las partes con fecha [FECHA FIRMA CONTRATO MARCO]. En caso de discrepancia entre este presupuesto y el Contrato Marco, prevalecerá lo establecido en el Contrato Marco (especialmente en lo referido a Propiedad Intelectual, Limitación de Responsabilidad y Protección de Datos).`;
+
+        // Theme
+        document.body.className = localStorage.getItem('theme') || 'dark';
+
+        // Auth
+        if (!Auth.protect('crm')) { }
+
+        // Generate proposal number
+        function generateNumeroPropuesta() {
+            const today = new Date();
+            const day = String(today.getDate()).padStart(2, '0');
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const year = String(today.getFullYear()).slice(-2);
+
+            // Count presupuestos for today
+            const todayStr = `${day}${month}${year}`;
+            const todayPresupuestos = allPresupuestos.filter(p => {
+                const num = p.Numero_Propuesta || '';
+                return num.startsWith(day) && num.includes(todayStr);
+            });
+
+            if (todayPresupuestos.length === 0) {
+                return `${day}${month}${year}-PK`;
+            } else {
+                const suffix = String.fromCharCode(97 + todayPresupuestos.length); // b, c, d...
+                return `${day}${suffix}${month}${year}-PK`;
+            }
+        }
+
+        // Calculate validity (10 business days)
+        function calculateValidez() {
+            const today = new Date();
+            let count = 0;
+            const validez = new Date(today);
+
+            while (count < 10) {
+                validez.setDate(validez.getDate() + 1);
+                const dayOfWeek = validez.getDay();
+                if (dayOfWeek !== 0 && dayOfWeek !== 6) { // Not weekend
+                    count++;
+                }
+            }
+
+            return validez.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: '2-digit' }).toUpperCase();
+        }
+
+        // Fetch presupuestos
+        async function fetchPresupuestos() {
+            try {
+                const res = await fetch(`https://docs.google.com/spreadsheets/d/${SHEETS_ID}/gviz/tq?tqx=out:json&sheet=Presupuestos`);
+                const text = await res.text();
+                const json = JSON.parse(text.substring(47, text.length - 2));
+                const cols = json.table.cols.map(c => c.label);
+                allPresupuestos = json.table.rows.map(r => {
+                    const obj = {};
+                    r.c.forEach((cell, i) => { obj[cols[i]] = cell ? (cell.v || '') : ''; });
+                    return obj;
+                }).filter(p => p.Numero_Propuesta);
+                renderPresupuestos(allPresupuestos);
+            } catch (e) {
+                console.log('No hay presupuestos aún');
+            }
+        }
+
+        function renderPresupuestos(presupuestos) {
+            const grid = document.getElementById('presupuestosGrid');
+            if (!presupuestos.length) {
+                grid.innerHTML = '<div class="empty-state"><div class="empty-state-icon">◎</div><p>No hay presupuestos. Crea el primero.</p></div>';
+                return;
+            }
+            grid.innerHTML = presupuestos.map(p => `
+                <div class="presupuesto-card" onclick="viewPresupuesto('${p.Numero_Propuesta}')">
+                    <div class="presupuesto-header">
+                        <span class="presupuesto-numero">${p.Numero_Propuesta}</span>
+                        <span class="presupuesto-estado ${(p.Estado || 'borrador').toLowerCase()}">${p.Estado || 'Borrador'}</span>
+                    </div>
+                    <div class="presupuesto-cliente">${p.Cliente || 'Sin cliente'}</div>
+                    <div class="presupuesto-titulo">${p.Titulo || 'Sin título'}</div>
+                    <div class="presupuesto-meta">
+                        <span>${p.Fecha || '-'}</span>
+                        <span class="presupuesto-total">${formatCurrency(p.Total_Implementacion || 0)}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function formatCurrency(val) {
+            return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(val);
+        }
+
+        function openModal(presupuesto = null) {
+            document.getElementById('modal').classList.add('active');
+            document.getElementById('numeroPropuesta').value = generateNumeroPropuesta();
+
+            if (!presupuesto) {
+                document.getElementById('modalTitle').textContent = 'Nuevo Presupuesto';
+                document.getElementById('presupuestoForm').reset();
+                document.getElementById('presupuestoId').value = '';
+                document.getElementById('implementacionItems').innerHTML = '';
+                document.getElementById('feeItems').innerHTML = '';
+                addImplementacionItem();
+                addFeeItem();
+            }
+            updateTotals();
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+
+        function addImplementacionItem() {
+            const tbody = document.getElementById('implementacionItems');
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><input type="text" name="impl_concepto[]" placeholder="Concepto"></td>
+                <td><textarea name="impl_desc[]" rows="2" placeholder="Descripción detallada"></textarea></td>
+                <td><input type="number" step="0.01" name="impl_importe[]" class="importe-input" placeholder="0.00" onchange="updateTotals()"></td>
+                <td><button type="button" class="remove-btn" onclick="this.closest('tr').remove(); updateTotals();">×</button></td>
+            `;
+            tbody.appendChild(row);
+        }
+
+        function addFeeItem() {
+            const tbody = document.getElementById('feeItems');
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><input type="text" name="fee_concepto[]" placeholder="Concepto"></td>
+                <td><textarea name="fee_desc[]" rows="2" placeholder="Qué incluye"></textarea></td>
+                <td><input type="text" name="fee_importe[]" class="importe-input" placeholder="Incluido"></td>
+                <td><button type="button" class="remove-btn" onclick="this.closest('tr').remove(); updateTotals();">×</button></td>
+            `;
+            tbody.appendChild(row);
+        }
+
+        function updateTotals() {
+            let totalImpl = 0;
+            document.querySelectorAll('[name="impl_importe[]"]').forEach(input => {
+                totalImpl += parseFloat(input.value) || 0;
+            });
+
+            let totalFee = 0;
+            document.querySelectorAll('[name="fee_importe[]"]').forEach(input => {
+                const val = parseFloat(input.value);
+                if (!isNaN(val)) totalFee += val;
+            });
+
+            document.getElementById('totalImplementacion').textContent = formatCurrency(totalImpl);
+            document.getElementById('totalMensual').textContent = totalFee > 0 ? formatCurrency(totalFee) + '/mes' : 'Ver detalle';
+            document.getElementById('totalGrand').textContent = formatCurrency(totalImpl);
+        }
+
+        function previewPresupuesto() {
+            const form = document.getElementById('presupuestoForm');
+            const cliente = form.cliente.value.toUpperCase();
+            const titulo = form.titulo.value;
+            const numero = document.getElementById('numeroPropuesta').value;
+            const fecha = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: '2-digit' }).toUpperCase();
+            const validez = calculateValidez();
+
+            // Get implementation items
+            let implRows = '';
+            let totalImpl = 0;
+            const implConceptos = form.querySelectorAll('[name="impl_concepto[]"]');
+            const implDescs = form.querySelectorAll('[name="impl_desc[]"]');
+            const implImportes = form.querySelectorAll('[name="impl_importe[]"]');
+
+            implConceptos.forEach((_, i) => {
+                const importe = parseFloat(implImportes[i].value) || 0;
+                totalImpl += importe;
+                implRows += `<tr>
+                    <td><strong>${implConceptos[i].value}</strong></td>
+                    <td>${implDescs[i].value}</td>
+                    <td style="text-align: right;">${formatCurrency(importe)}</td>
+                </tr>`;
+            });
+
+            // Get fee items
+            let feeRows = '';
+            const feeConceptos = form.querySelectorAll('[name="fee_concepto[]"]');
+            const feeDescs = form.querySelectorAll('[name="fee_desc[]"]');
+            const feeImportes = form.querySelectorAll('[name="fee_importe[]"]');
+
+            feeConceptos.forEach((_, i) => {
+                const val = feeImportes[i].value;
+                feeRows += `<tr>
+                    <td><strong>${feeConceptos[i].value}</strong></td>
+                    <td>${feeDescs[i].value}</td>
+                    <td style="text-align: right;">${isNaN(parseFloat(val)) ? val : formatCurrency(parseFloat(val))}</td>
+                </tr>`;
+            });
+
+            const primerPago = parseFloat(form.primerPago.value) || 0;
+            const ultimoPago = parseFloat(form.ultimoPago.value) || 0;
+
+            document.getElementById('previewContent').innerHTML = `
+                <div class="preview-section">
+                    <div class="preview-header">PROPOSTA ${cliente} - ${titulo}</div>
+                    
+                    <div class="preview-meta">
+                        <div>
+                            <div>Propuesta ${numero}</div>
+                            <div>Fecha: ${fecha}</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div>Validez</div>
+                            <div><strong>${validez}</strong></div>
+                        </div>
+                    </div>
+
+                    <h3 style="text-decoration: underline; margin-bottom: 15px;">Implementación y Setup</h3>
+                    <table class="preview-table">
+                        <thead>
+                            <tr>
+                                <th>Concepto / Fase</th>
+                                <th>Descripción Detallada</th>
+                                <th style="text-align: right;">Importe (€) - Sin IVA</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${implRows}
+                            <tr style="background: #f5f5f5;">
+                                <td colspan="2"><strong>TOTAL IMPLEMENTACIÓN (Sin IVA)</strong></td>
+                                <td style="text-align: right;"><strong>${formatCurrency(totalImpl)}</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3 style="text-decoration: underline; margin-bottom: 15px;">Fee mensual</h3>
+                    <table class="preview-table">
+                        <thead>
+                            <tr>
+                                <th>Concepto Mensual</th>
+                                <th>Qué Incluye (Justificación de Valor)</th>
+                                <th style="text-align: right;">Importe (€) - Sin IVA</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${feeRows}
+                        </tbody>
+                    </table>
+
+                    ${primerPago > 0 ? `<p><strong>PRIMER PAGO - Incluye primera mensualidad (Sin IVA):</strong> ${formatCurrency(primerPago)}</p>` : ''}
+                    ${ultimoPago > 0 ? `<p><strong>ÚLTIMO PAGO (Sin IVA):</strong> ${formatCurrency(ultimoPago)}</p>` : ''}
+
+                    <div class="preview-legal">
+                        ${LETRA_PEQUENA.split('\n\n').map(p => `<p style="margin-bottom: 8px;">${p}</p>`).join('')}
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('previewModal').classList.add('active');
+        }
+
+        function closePreview() {
+            document.getElementById('previewModal').classList.remove('active');
+        }
+
+        async function savePresupuesto(e) {
+            e.preventDefault();
+            const form = e.target;
+            const statusMsg = document.getElementById('statusMsg');
+
+            const data = {
+                numero_propuesta: document.getElementById('numeroPropuesta').value,
+                cliente: form.cliente.value,
+                titulo: form.titulo.value,
+                estado: form.estado.value,
+                fecha: new Date().toLocaleDateString('es-ES'),
+                validez: calculateValidez(),
+                implementacion: [],
+                fee_mensual: [],
+                primer_pago: form.primerPago.value,
+                ultimo_pago: form.ultimoPago.value
+            };
+
+            // Collect implementation items
+            const implConceptos = form.querySelectorAll('[name="impl_concepto[]"]');
+            const implDescs = form.querySelectorAll('[name="impl_desc[]"]');
+            const implImportes = form.querySelectorAll('[name="impl_importe[]"]');
+            implConceptos.forEach((_, i) => {
+                data.implementacion.push({
+                    concepto: implConceptos[i].value,
+                    descripcion: implDescs[i].value,
+                    importe: implImportes[i].value
+                });
+            });
+
+            // Collect fee items
+            const feeConceptos = form.querySelectorAll('[name="fee_concepto[]"]');
+            const feeDescs = form.querySelectorAll('[name="fee_desc[]"]');
+            const feeImportes = form.querySelectorAll('[name="fee_importe[]"]');
+            feeConceptos.forEach((_, i) => {
+                data.fee_mensual.push({
+                    concepto: feeConceptos[i].value,
+                    descripcion: feeDescs[i].value,
+                    importe: feeImportes[i].value
+                });
+            });
+
+            // Calculate total
+            data.total_implementacion = data.implementacion.reduce((sum, item) => sum + (parseFloat(item.importe) || 0), 0);
+
+            try {
+                const res = await fetch(WEBHOOK, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (res.ok) {
+                    statusMsg.textContent = 'Presupuesto guardado correctamente';
+                    statusMsg.className = 'status-msg success';
+                    setTimeout(() => {
+                        closeModal();
+                        fetchPresupuestos();
+                        statusMsg.className = 'status-msg';
+                    }, 1500);
+                } else throw new Error();
+            } catch {
+                statusMsg.textContent = 'Error al guardar. Verifica el webhook en n8n.';
+                statusMsg.className = 'status-msg error';
+            }
+        }
+
+        function generatePDF() {
+            alert('Para generar el PDF, guarda el presupuesto primero. El workflow de n8n generará el PDF automáticamente.');
+            closePreview();
+        }
+
+        function viewPresupuesto(numero) {
+            const p = allPresupuestos.find(x => x.Numero_Propuesta === numero);
+            if (p) {
+                // TODO: Implement edit mode
+                alert(`Editar presupuesto ${numero} - Próximamente`);
+            }
+        }
+
+        // Init
+        fetchPresupuestos();
+    </script>
+</body>
+
+</html>
