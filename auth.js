@@ -15,10 +15,10 @@ const Auth = {
     // Usuario admin por defecto
     defaultUsers: [
         {
-            email: 'admin@pracmatik.com',
+            email: 'albert@pracmatik.com',
             password: 'admin123',
             role: 'admin',
-            name: 'Administrador',
+            name: 'Albert',
             createdAt: new Date().toISOString()
         }
     ],
@@ -143,9 +143,12 @@ const Auth = {
             return { success: false, error: 'Usuario no encontrado' };
         }
 
-        // No permitir cambiar email del admin original
-        if (email === 'admin@pracmatik.com' && data.email !== email) {
-            return { success: false, error: 'No se puede cambiar el email del admin principal' };
+        // Solo verificar cambio de email si se proporciona un nuevo email diferente
+        if (data.email && data.email !== email) {
+            // Verificar que el nuevo email no existe ya
+            if (users.find(u => u.email === data.email)) {
+                return { success: false, error: 'El email ya está en uso' };
+            }
         }
 
         users[index] = { ...users[index], ...data };
@@ -158,7 +161,7 @@ const Auth = {
      */
     deleteUser(email) {
         // No permitir eliminar admin original
-        if (email === 'admin@pracmatik.com') {
+        if (email === 'albert@pracmatik.com') {
             return { success: false, error: 'No se puede eliminar al administrador principal' };
         }
 
