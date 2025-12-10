@@ -628,38 +628,49 @@
             const nif = form.nif.value.trim();
 
             if (!nombre && !email && !nif) {
-                statusMsg.textContent = '⚠️ Ingresa al menos Nombre, Email o NIF';
+                statusMsg.textContent = 'Ingresa al menos Nombre, Email o NIF';
                 statusMsg.className = 'status-msg error';
                 return;
             }
 
             btn.disabled = true;
-            btn.textContent = '⏳ Guardando...';
+            btn.textContent = 'Guardando...';
 
-            // Usar FormData para soportar archivos
-            const formData = new FormData();
-            formData.append('id', document.getElementById('clientId').value);
-            formData.append('nombre', nombre);
-            formData.append('nif', nif);
-            formData.append('email', email);
-            formData.append('telefono', form.telefono.value);
-            formData.append('direccion', form.direccion.value);
-            formData.append('estado', form.estado.value);
-            formData.append('notas', form.notas.value);
+            const data = {
+                id: document.getElementById('clientId').value || `CLI-${Date.now()}`,
+                nombre,
+                nif,
+                email,
+                telefono: form.telefono.value,
+                direccion: form.direccion.value,
+                estado: form.estado.value,
+                notas: form.notas.value
+            };
 
-            // Añadir contrato si existe
             const contratoFile = document.getElementById('contratoFile').files[0];
-            if (contratoFile) {
-                formData.append('contrato', contratoFile);
-            }
 
             try {
-                const res = await fetch(WEBHOOK, {
-                    method: 'POST',
-                    body: formData
-                });
+                let res;
+                if (contratoFile) {
+                    // Si hay archivo, usar FormData
+                    const formData = new FormData();
+                    Object.keys(data).forEach(key => formData.append(key, data[key]));
+                    formData.append('contrato', contratoFile);
+                    res = await fetch(WEBHOOK, {
+                        method: 'POST',
+                        body: formData
+                    });
+                } else {
+                    // Sin archivo, enviar JSON (más compatible con n8n)
+                    res = await fetch(WEBHOOK, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                }
+
                 if (res.ok) {
-                    statusMsg.textContent = '✅ Cliente guardado correctamente';
+                    statusMsg.textContent = 'Cliente guardado correctamente';
                     statusMsg.className = 'status-msg success';
                     setTimeout(() => {
                         closeModal();
@@ -667,11 +678,11 @@
                     }, 1500);
                 } else throw new Error();
             } catch {
-                statusMsg.textContent = '❌ Error al guardar. Verifica el webhook en n8n.';
+                statusMsg.textContent = 'Error al guardar. Verifica el webhook en n8n.';
                 statusMsg.className = 'status-msg error';
             }
             btn.disabled = false;
-            btn.textContent = '💾 Guardar';
+            btn.textContent = 'Guardar';
         }
 
         if (location.hash === '#nuevo') openModal();
