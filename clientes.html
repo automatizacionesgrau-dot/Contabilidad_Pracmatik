@@ -542,7 +542,7 @@
 
         async function fetchClients() {
             try {
-                const res = await fetch(`https://docs.google.com/spreadsheets/d/${SHEETS_ID}/gviz/tq?tqx=out:json&sheet=Clientes`);
+                const res = await fetch(`https://docs.google.com/spreadsheets/d/${SHEETS_ID}/gviz/tq?tqx=out:json&sheet=Hoja%201`);
                 const text = await res.text();
                 const json = JSON.parse(text.substring(47, text.length - 2));
                 const cols = json.table.cols.map(c => c.label);
