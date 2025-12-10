@@ -5,19 +5,19 @@
 const Auth = {
     USERS_KEY: 'crm_users',
     SESSION_KEY: 'crm_session',
-    
+
     // Configuración de acceso por rol
     ACCESS_CONFIG: {
-        admin: ['crm', 'clientes', 'leads', 'proyectos', 'comercial', 'dashboard', 'usuarios', 'index'],
-        usuario: ['crm', 'clientes', 'leads', 'proyectos', 'comercial']
+        admin: ['crm', 'clientes', 'leads', 'proyectos', 'comercial', 'dashboard', 'usuarios', 'index', 'config'],
+        usuario: ['crm', 'clientes', 'leads', 'proyectos', 'comercial', 'config']
     },
 
     // Usuario admin por defecto
     defaultUsers: [
-        { 
-            email: 'admin@pracmatik.com', 
-            password: 'admin123', 
-            role: 'admin', 
+        {
+            email: 'admin@pracmatik.com',
+            password: 'admin123',
+            role: 'admin',
             name: 'Administrador',
             createdAt: new Date().toISOString()
         }
@@ -39,7 +39,7 @@ const Auth = {
     login(email, password) {
         const users = this.getAllUsers();
         const user = users.find(u => u.email === email && u.password === password);
-        
+
         if (user) {
             const session = {
                 email: user.email,
@@ -50,7 +50,7 @@ const Auth = {
             localStorage.setItem(this.SESSION_KEY, JSON.stringify(session));
             return { success: true, user: session };
         }
-        
+
         return { success: false, error: 'Credenciales incorrectas' };
     },
 
@@ -76,7 +76,7 @@ const Auth = {
     hasAccess(section) {
         const user = this.getCurrentUser();
         if (!user) return false;
-        
+
         const allowedSections = this.ACCESS_CONFIG[user.role] || [];
         return allowedSections.includes(section);
     },
@@ -87,18 +87,18 @@ const Auth = {
     protect(section) {
         this.init();
         const user = this.getCurrentUser();
-        
+
         if (!user) {
             window.location.href = 'login.html';
             return false;
         }
-        
+
         if (!this.hasAccess(section)) {
             alert('⚠️ No tienes acceso a esta sección');
             window.location.href = 'crm.html';
             return false;
         }
-        
+
         return true;
     },
 
@@ -117,17 +117,17 @@ const Auth = {
      */
     addUser(userData) {
         const users = this.getAllUsers();
-        
+
         // Verificar si ya existe
         if (users.find(u => u.email === userData.email)) {
             return { success: false, error: 'El email ya está registrado' };
         }
-        
+
         users.push({
             ...userData,
             createdAt: new Date().toISOString()
         });
-        
+
         localStorage.setItem(this.USERS_KEY, JSON.stringify(users));
         return { success: true };
     },
@@ -138,16 +138,16 @@ const Auth = {
     updateUser(email, data) {
         const users = this.getAllUsers();
         const index = users.findIndex(u => u.email === email);
-        
+
         if (index === -1) {
             return { success: false, error: 'Usuario no encontrado' };
         }
-        
+
         // No permitir cambiar email del admin original
         if (email === 'admin@pracmatik.com' && data.email !== email) {
             return { success: false, error: 'No se puede cambiar el email del admin principal' };
         }
-        
+
         users[index] = { ...users[index], ...data };
         localStorage.setItem(this.USERS_KEY, JSON.stringify(users));
         return { success: true };
@@ -161,7 +161,7 @@ const Auth = {
         if (email === 'admin@pracmatik.com') {
             return { success: false, error: 'No se puede eliminar al administrador principal' };
         }
-        
+
         const users = this.getAllUsers().filter(u => u.email !== email);
         localStorage.setItem(this.USERS_KEY, JSON.stringify(users));
         return { success: true };
