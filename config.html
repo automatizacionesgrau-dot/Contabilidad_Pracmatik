@@ -183,14 +183,48 @@
 
         .settings-section {
             background: var(--bg-card);
+            backdrop-filter: blur(20px);
             border: 1px solid var(--border);
             border-radius: 20px;
             padding: 25px;
-            transition: all 0.3s;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow:
+                0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                0 2px 4px -1px rgba(0, 0, 0, 0.06),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .settings-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
         }
 
         .settings-section:hover {
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            transform: translateY(-4px);
+            box-shadow:
+                0 20px 25px -5px rgba(0, 0, 0, 0.2),
+                0 10px 10px -5px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .light .settings-section {
+            box-shadow:
+                0 4px 6px -1px rgba(0, 0, 0, 0.05),
+                0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+
+        .light .settings-section:hover {
+            box-shadow:
+                0 20px 25px -5px rgba(0, 0, 0, 0.1),
+                0 10px 10px -5px rgba(0, 0, 0, 0.05);
         }
 
         .section-header {
@@ -471,6 +505,61 @@
             color: var(--text-muted);
             font-size: 12px;
         }
+
+        /* Floating animation for header */
+        .header-info {
+            animation: subtleFloat 6s ease-in-out infinite;
+        }
+
+        @keyframes subtleFloat {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-3px);
+            }
+        }
+
+        /* Subtle glow on focus */
+        .form-group input:focus {
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        /* Section icon subtle pulse */
+        .section-icon {
+            display: inline-block;
+            animation: subtlePulse 3s ease-in-out infinite;
+        }
+
+        @keyframes subtlePulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        /* Button depth */
+        .btn {
+            box-shadow: 0 4px 14px -3px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px -2px rgba(99, 102, 241, 0.3);
+        }
+
+        /* Avatar glow */
+        .header-info .avatar {
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
     </style>
     <script src="auth.js"></script>
 </head>
@@ -655,7 +744,7 @@
         updateThemeUI();
 
         // Proteger página
-        if (!Auth.protect('crm')) {
+        if (!Auth.protect('config')) {
             // La función protect ya redirige
         }
 
