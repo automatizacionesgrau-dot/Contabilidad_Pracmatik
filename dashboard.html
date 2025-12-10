@@ -632,6 +632,7 @@
       }
     }
   </style>
+  <script src="auth.js"></script>
 </head>
 
 <body class="dark">
@@ -735,6 +736,12 @@
     // Theme
     const savedTheme = localStorage.getItem('theme') || 'dark';
     document.body.className = savedTheme;
+
+    // Proteger página
+    if (!Auth.protect('dashboard')) {
+      // La función protect ya redirige
+    }
+
     function toggleTheme() {
       const newTheme = document.body.classList.contains('dark') ? 'light' : 'dark';
       document.body.className = newTheme;

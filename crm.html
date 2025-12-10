@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="auth.js"></script>
     <style>
         :root {
             --primary: #6366f1;
@@ -830,6 +831,12 @@
 
         // Theme
         document.body.className = localStorage.getItem('theme') || 'dark';
+
+        // Proteger página
+        if (!Auth.protect('crm')) {
+            // La función protect ya redirige
+        }
+
         function toggleTheme() {
             const t = document.body.classList.contains('dark') ? 'light' : 'dark';
             document.body.className = t;

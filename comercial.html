@@ -247,38 +247,133 @@
             border-radius: 4px;
         }
 
-        .engagement-fill.hot {
-            background: var(--success);
+        .engagement-fill.cold {
+            background: #64748b;
+        }
+
+        .engagement-fill.cool {
+            background: #3b82f6;
         }
 
         .engagement-fill.warm {
-            background: var(--warning);
+            background: #eab308;
         }
 
-        .engagement-fill.cold {
-            background: var(--text-muted);
+        .engagement-fill.hot {
+            background: #f97316;
         }
 
-        .badge {
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
+        .engagement-fill.burning {
+            background: linear-gradient(90deg, #ef4444, #dc2626);
+        }
+
+        .badge.burning {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
         }
 
         .badge.hot {
-            background: rgba(16, 185, 129, 0.2);
-            color: var(--success);
+            background: rgba(249, 115, 22, 0.2);
+            color: #f97316;
         }
 
         .badge.warm {
-            background: rgba(245, 158, 11, 0.2);
-            color: var(--warning);
+            background: rgba(234, 179, 8, 0.2);
+            color: #eab308;
+        }
+
+        .badge.cool {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
         }
 
         .badge.cold {
-            background: rgba(148, 163, 184, 0.2);
+            background: rgba(100, 116, 139, 0.2);
+            color: #64748b;
+        }
+
+        /* Score Display */
+        .score-display {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .score-value {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: var(--bg-main);
+        }
+
+        /* Thermometer Visual */
+        .thermometer {
+            width: 120px;
+            height: 12px;
+            background: linear-gradient(to right, #64748b, #3b82f6, #eab308, #f97316, #ef4444);
+            border-radius: 6px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .thermometer-marker {
+            position: absolute;
+            top: -2px;
+            width: 4px;
+            height: 16px;
+            background: white;
+            border-radius: 2px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            transition: left 0.3s ease;
+        }
+
+        /* Tooltip */
+        .tooltip-trigger {
+            position: relative;
+            cursor: help;
+        }
+
+        .tooltip-content {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 11px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s;
+            z-index: 100;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .tooltip-trigger:hover .tooltip-content {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .tooltip-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 4px;
+        }
+
+        .tooltip-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .tooltip-label {
             color: var(--text-muted);
+        }
+
+        .tooltip-value {
+            font-weight: 600;
         }
 
         .action-btn {
@@ -311,6 +406,7 @@
             }
         }
     </style>
+    <script src="auth.js"></script>
 </head>
 
 <body class="dark">
@@ -385,15 +481,17 @@
 
         <!-- Info -->
         <div class="section" style="background: rgba(99,102,241,0.1); border-color: var(--primary);">
-            <h2 class="section-title">💡 Cómo funciona</h2>
-            <p style="color: var(--text-muted); line-height: 1.6;">
-                Esta sección muestra los contactos de tu campaña de email frío. El nivel de interés se calcula según:
+            <h2 class="section-title">💡 Cómo funciona el Termómetro</h2>
+            <p style="color: var(--text-muted); line-height: 1.8;">
+                El nivel de interés se calcula con un <strong>algoritmo multi-factor</strong> que considera:
                 <br><br>
-                🔥 <strong>Caliente</strong>: +3 aperturas Y última apertura en últimos 3 días<br>
-                🌡️ <strong>Tibio</strong>: 1-3 aperturas Y última apertura en última semana<br>
-                ❄️ <strong>Frío</strong>: Sin aperturas o última hace más de 7 días
+                📊 <strong>Aperturas totales</strong> (0-30 pts): Más aperturas = más interés<br>
+                ⏰ <strong>Recencia</strong> (0-25 pts): Aperturas recientes valen más<br>
+                🔄 <strong>Interés sostenido</strong> (0-25 pts): Sigue abriendo después de semanas<br>
+                📈 <strong>Frecuencia</strong> (0-20 pts): Aperturas por semana
                 <br><br>
-                Haz clic en "Crear Lead" para convertir un contacto en lead del CRM.
+                🧊 <strong>Frío</strong> (0-19) | ❄️ <strong>Fresc</strong> (20-39) | 🌡️ <strong>Tibio</strong> (40-59)
+                | 🔥 <strong>Caliente</strong> (60-79) | 🔥🔥 <strong>En llamas</strong> (80-100)
             </p>
         </div>
     </div>
@@ -402,21 +500,73 @@
         const WEBHOOK = 'https://hooks.pracmatik.com/webhook/email-tracking';
         document.body.className = localStorage.getItem('theme') || 'dark';
 
-        function calculateInterest(contact) {
-            if (!contact.aperturas || contact.aperturas === 0) return 'cold';
+        // Proteger página
+        if (!Auth.protect('comercial')) {
+            // La función protect ya redirige
+        }
+
+        /**
+         * Algoritmo Multi-Factor de Interés
+         * Calcula un score de 0-100 basado en múltiples factores
+         */
+        function calculateInterestScore(contact) {
             const now = new Date();
+            let score = 0;
+            let factors = {};
+
+            const opens = parseInt(contact.aperturas || 0);
             const lastOpen = contact.ultima ? parseDate(contact.ultima) : null;
             const sentDate = contact.enviado ? parseDate(contact.enviado) : null;
-            const daysSinceOpen = lastOpen ? Math.floor((now - lastOpen) / (1000 * 60 * 60 * 24)) : 999;
-            const daysSinceSent = sentDate ? Math.floor((now - sentDate) / (1000 * 60 * 60 * 24)) : 0;
+            const daysSinceOpen = lastOpen ? Math.floor((now - lastOpen) / 86400000) : 999;
+            const daysSinceSent = sentDate ? Math.floor((now - sentDate) / 86400000) : 0;
 
-            // CALIENTE: +8 aperturas O apertura reciente (<7 días) si enviado hace >15 días
-            if (contact.aperturas >= 8) return 'hot';
-            if (daysSinceOpen <= 7 && daysSinceSent > 15) return 'hot';
+            // Factor 1: Total de aperturas (0-30 puntos)
+            const opensScore = Math.min(30, opens * 4);
+            score += opensScore;
+            factors.aperturas = opensScore;
 
-            // TIBIO: 1-7 aperturas con actividad reciente
-            if (contact.aperturas >= 1 && daysSinceOpen <= 14) return 'warm';
-            return 'cold';
+            // Factor 2: Recencia de última apertura (0-25 puntos)
+            let recencyScore = 0;
+            if (lastOpen) {
+                if (daysSinceOpen <= 1) recencyScore = 25;
+                else if (daysSinceOpen <= 3) recencyScore = 20;
+                else if (daysSinceOpen <= 7) recencyScore = 15;
+                else if (daysSinceOpen <= 14) recencyScore = 10;
+                else if (daysSinceOpen <= 30) recencyScore = 5;
+            }
+            score += recencyScore;
+            factors.recencia = recencyScore;
+
+            // Factor 3: Interés sostenido (0-25 puntos)
+            // Si el email fue enviado hace tiempo pero lo sigue abriendo = muy interesado
+            let sustainedScore = 0;
+            if (sentDate && lastOpen && opens > 0) {
+                if (daysSinceSent > 15 && opens >= 3) sustainedScore = 25;
+                else if (daysSinceSent > 7 && opens >= 2) sustainedScore = 15;
+                else if (daysSinceSent > 3 && opens >= 1) sustainedScore = 8;
+            }
+            score += sustainedScore;
+            factors.sostenido = sustainedScore;
+
+            // Factor 4: Frecuencia de engagement (0-20 puntos)
+            let frequencyScore = 0;
+            if (sentDate && opens > 0) {
+                const daysSent = Math.max(1, daysSinceSent);
+                const opensPerWeek = (opens / daysSent) * 7;
+                frequencyScore = Math.min(20, Math.round(opensPerWeek * 10));
+            }
+            score += frequencyScore;
+            factors.frecuencia = frequencyScore;
+
+            return { score: Math.min(100, score), factors };
+        }
+
+        function getInterestLevel(score) {
+            if (score >= 80) return { level: 'burning', label: '🔥🔥 En llamas', emoji: '🔥🔥' };
+            if (score >= 60) return { level: 'hot', label: '🔥 Caliente', emoji: '🔥' };
+            if (score >= 40) return { level: 'warm', label: '🌡️ Tibio', emoji: '🌡️' };
+            if (score >= 20) return { level: 'cool', label: '❄️ Fresco', emoji: '❄️' };
+            return { level: 'cold', label: '🧊 Frío', emoji: '🧊' };
         }
 
         function parseDate(str) {
@@ -434,7 +584,7 @@
 
         function renderEmails(data) {
             const tbody = document.getElementById('emailBody');
-            let hot = 0, opened = 0;
+            let hotCount = 0, opened = 0;
 
             if (!data || data.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 40px; color: var(--text-muted);">📭 No hay datos. Activa el workflow "Email Tracking" en n8n.</td></tr>';
@@ -442,24 +592,36 @@
             }
 
             tbody.innerHTML = data.map(c => {
-                const interest = c.interes || calculateInterest(c);
-                if (interest === 'hot') hot++;
+                const { score, factors } = calculateInterestScore(c);
+                const interest = getInterestLevel(score);
+                if (score >= 60) hotCount++;
                 if (c.aperturas > 0) opened++;
-                const interestLabel = { hot: '🔥 Caliente', warm: '🌡️ Tibio', cold: '❄️ Frío' }[interest];
-                const pct = Math.min(100, (c.aperturas || 0) * 20);
 
                 return `
           <tr>
             <td><strong>${c.empresa || '-'}</strong>${c.persona ? `<br><small style="color:var(--text-muted)">${c.persona}</small>` : ''}</td>
             <td>${c.email || '-'}</td>
             <td>
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <div class="engagement-bar"><div class="engagement-fill ${interest}" style="width: ${pct}%"></div></div>
-                <span>${c.aperturas || 0}</span>
+              <div class="tooltip-trigger">
+                <div class="thermometer">
+                  <div class="thermometer-marker" style="left: ${score}%"></div>
+                </div>
+                <div class="tooltip-content">
+                  <div class="tooltip-row"><span class="tooltip-label">📊 Aperturas:</span><span class="tooltip-value">+${factors.aperturas}</span></div>
+                  <div class="tooltip-row"><span class="tooltip-label">⏰ Recencia:</span><span class="tooltip-value">+${factors.recencia}</span></div>
+                  <div class="tooltip-row"><span class="tooltip-label">🔄 Sostenido:</span><span class="tooltip-value">+${factors.sostenido}</span></div>
+                  <div class="tooltip-row"><span class="tooltip-label">📈 Frecuencia:</span><span class="tooltip-value">+${factors.frecuencia}</span></div>
+                  <div class="tooltip-row" style="border-top: 1px solid var(--border); padding-top: 4px; margin-top: 4px;"><span class="tooltip-label"><strong>Total:</strong></span><span class="tooltip-value"><strong>${score}/100</strong></span></div>
+                </div>
               </div>
             </td>
-            <td>${c.ultima || '-'}</td>
-            <td><span class="badge ${interest}">${interestLabel}</span></td>
+            <td>
+              <div class="score-display">
+                <span class="score-value">${score}</span>
+                <span>${c.aperturas || 0} aperturas</span>
+              </div>
+            </td>
+            <td><span class="badge ${interest.level}">${interest.label}</span></td>
             <td><button class="action-btn" onclick="createLead('${(c.empresa || '').replace(/'/g, "\\'")}', '${c.email}')">➕ Lead</button></td>
           </tr>
         `;
@@ -468,7 +630,7 @@
             document.getElementById('kpiEnviados').textContent = data.length;
             document.getElementById('kpiAbiertos').textContent = opened;
             document.getElementById('kpiTasaApertura').textContent = data.length > 0 ? `${Math.round(opened / data.length * 100)}% tasa apertura` : '-';
-            document.getElementById('kpiHot').textContent = hot;
+            document.getElementById('kpiHot').textContent = hotCount;
             document.getElementById('kpiConvertidos').textContent = '-';
         }
 

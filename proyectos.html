@@ -409,6 +409,7 @@
             color: var(--danger);
         }
     </style>
+    <script src="auth.js"></script>
 </head>
 
 <body class="dark">
@@ -503,6 +504,11 @@
         let allProjects = [], allClients = [];
 
         document.body.className = localStorage.getItem('theme') || 'dark';
+
+        // Proteger página
+        if (!Auth.protect('proyectos')) {
+            // La función protect ya redirige
+        }
 
         async function fetchData() {
             try {

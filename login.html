@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔐 Login - CRM Pracmatik</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        .dark {
+            --bg-main: #030712;
+            --bg-card: rgba(15, 23, 42, 0.95);
+            --bg-glass: rgba(255, 255, 255, 0.03);
+            --text: #f1f5f9;
+            --text-muted: #64748b;
+            --border: rgba(148, 163, 184, 0.15);
+        }
+
+        .light {
+            --bg-main: #f8fafc;
+            --bg-card: rgba(255, 255, 255, 0.95);
+            --bg-glass: rgba(0, 0, 0, 0.02);
+            --text: #0f172a;
+            --text-muted: #475569;
+            --border: rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg-main);
+            min-height: 100vh;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Background */
+        .bg-universe {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            background: radial-gradient(ellipse at 50% 0%, rgba(99, 102, 241, 0.2) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(236, 72, 153, 0.15) 0%, transparent 40%),
+                radial-gradient(ellipse at 20% 90%, rgba(16, 185, 129, 0.1) 0%, transparent 40%);
+        }
+
+        .stars {
+            position: absolute;
+            inset: 0;
+            background-image:
+                radial-gradient(2px 2px at 20px 30px, rgba(255, 255, 255, 0.3), transparent),
+                radial-gradient(2px 2px at 40px 70px, rgba(255, 255, 255, 0.2), transparent),
+                radial-gradient(1px 1px at 90px 40px, rgba(255, 255, 255, 0.4), transparent),
+                radial-gradient(2px 2px at 130px 80px, rgba(255, 255, 255, 0.2), transparent);
+            background-size: 200px 200px;
+            animation: twinkle 8s ease-in-out infinite;
+        }
+
+        @keyframes twinkle {
+
+            0%,
+            100% {
+                opacity: 0.5;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        .light .stars {
+            opacity: 0;
+        }
+
+        .nebula {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(150px);
+            opacity: 0.4;
+            animation: drift 30s ease-in-out infinite;
+        }
+
+        .nebula.n1 {
+            background: linear-gradient(135deg, var(--primary), #8b5cf6);
+            top: -200px;
+            left: -200px;
+        }
+
+        .nebula.n2 {
+            background: linear-gradient(135deg, #ec4899, var(--danger));
+            bottom: -200px;
+            right: -200px;
+            animation-delay: -15s;
+        }
+
+        @keyframes drift {
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            50% {
+                transform: translate(30px, -30px) scale(1.1);
+            }
+        }
+
+        .light .nebula {
+            opacity: 0.1;
+        }
+
+        /* Login Card */
+        .login-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 420px;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(40px);
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            padding: 48px 40px;
+            box-shadow: 0 25px 80px -12px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+            animation: cardIn 0.6s ease;
+        }
+
+        @keyframes cardIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+        }
+
+        /* Brand */
+        .brand {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .brand-name {
+            font-size: 36px;
+            font-weight: 900;
+            letter-spacing: -2px;
+            background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0.7) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .light .brand-name {
+            background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+        }
+
+        .brand-dot {
+            color: var(--primary);
+            -webkit-text-fill-color: var(--primary);
+        }
+
+        .brand-subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 16px 20px;
+            font-size: 15px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            color: var(--text);
+            outline: none;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+        }
+
+        .form-group input::placeholder {
+            color: var(--text-muted);
+            opacity: 0.6;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 18px;
+            font-size: 15px;
+            font-weight: 700;
+            color: white;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.2));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px -10px rgba(99, 102, 241, 0.5);
+        }
+
+        .btn:hover::before {
+            opacity: 1;
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Status Message */
+        .status-msg {
+            padding: 14px 18px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            display: none;
+            animation: shake 0.3s ease;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        .status-msg.error {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--danger);
+        }
+
+        .status-msg.success {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--success);
+        }
+
+        /* Footer */
+        .login-footer {
+            text-align: center;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+        }
+
+        .login-footer p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            z-index: 10;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .theme-toggle:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+    </style>
+</head>
+
+<body class="dark">
+    <div class="bg-universe">
+        <div class="stars"></div>
+        <div class="nebula n1"></div>
+        <div class="nebula n2"></div>
+    </div>
+
+    <button class="theme-toggle" onclick="toggleTheme()" title="Cambiar tema">🌓</button>
+
+    <div class="login-container">
+        <div class="login-card">
+            <div class="brand">
+                <span class="brand-name">pracmatik<span class="brand-dot">.</span></span>
+                <p class="brand-subtitle">Accede a tu CRM</p>
+            </div>
+
+            <div id="statusMsg" class="status-msg"></div>
+
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" name="email" placeholder="tu@email.com" required autofocus>
+                </div>
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" name="password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn" id="loginBtn">
+                    🔐 Iniciar Sesión
+                </button>
+            </form>
+
+            <div class="login-footer">
+                <p>© 2024 pracmatik. CRM</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script>
+        // Theme
+        document.body.className = localStorage.getItem('theme') || 'dark';
+
+        function toggleTheme() {
+            const t = document.body.classList.contains('dark') ? 'light' : 'dark';
+            document.body.className = t;
+            localStorage.setItem('theme', t);
+        }
+
+        // Si ya hay sesión, redirigir al CRM
+        Auth.init();
+        if (Auth.getCurrentUser()) {
+            window.location.href = 'crm.html';
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const form = e.target;
+            const btn = document.getElementById('loginBtn');
+            const statusMsg = document.getElementById('statusMsg');
+
+            const email = form.email.value.trim();
+            const password = form.password.value;
+
+            btn.disabled = true;
+            btn.textContent = '⏳ Verificando...';
+            statusMsg.className = 'status-msg';
+
+            // Pequeño delay para UX
+            setTimeout(() => {
+                const result = Auth.login(email, password);
+
+                if (result.success) {
+                    statusMsg.innerHTML = '✅ ¡Bienvenido!';
+                    statusMsg.className = 'status-msg success';
+
+                    setTimeout(() => {
+                        window.location.href = 'crm.html';
+                    }, 800);
+                } else {
+                    statusMsg.innerHTML = '❌ ' + result.error;
+                    statusMsg.className = 'status-msg error';
+                    btn.disabled = false;
+                    btn.textContent = '🔐 Iniciar Sesión';
+                }
+            }, 500);
+        }
+    </script>
+</body>
+
+</html>

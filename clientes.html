@@ -374,7 +374,68 @@
             border: 1px solid var(--danger);
             color: var(--danger);
         }
+
+        /* File Upload Styles */
+        .file-upload-wrapper {
+            position: relative;
+        }
+
+        .file-upload-wrapper input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 14px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            cursor: pointer;
+        }
+
+        .file-upload-wrapper input[type="file"]::file-selector-button {
+            padding: 8px 16px;
+            margin-right: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .file-preview {
+            margin-top: 8px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .file-preview a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .file-preview a:hover {
+            text-decoration: underline;
+        }
+
+        .contract-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 11px;
+            color: var(--primary);
+            text-decoration: none;
+            margin-top: 8px;
+        }
+
+        .contract-link:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
     </style>
+    <script src="auth.js"></script>
 </head>
 
 <body class="dark">
@@ -417,8 +478,8 @@
                 <input type="hidden" id="clientId" name="id">
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Nombre / Razón Social *</label>
-                        <input type="text" name="nombre" required>
+                        <label>Nombre / Razón Social</label>
+                        <input type="text" name="nombre" placeholder="Opcional">
                     </div>
                     <div class="form-group">
                         <label>NIF/CIF</label>
@@ -450,6 +511,13 @@
                     <label>Notas</label>
                     <textarea name="notas" placeholder="Observaciones..."></textarea>
                 </div>
+                <div class="form-group">
+                    <label>📄 Contrato</label>
+                    <div class="file-upload-wrapper">
+                        <input type="file" name="contrato" id="contratoFile" accept=".pdf,.doc,.docx">
+                        <div class="file-preview" id="contratoPreview"></div>
+                    </div>
+                </div>
                 <div class="modal-actions">
                     <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
                     <button type="submit" class="btn">💾 Guardar</button>
@@ -465,6 +533,11 @@
 
         const savedTheme = localStorage.getItem('theme') || 'dark';
         document.body.className = savedTheme;
+
+        // Proteger página
+        if (!Auth.protect('clientes')) {
+            // La función protect ya redirige
+        }
 
         async function fetchClients() {
             try {
@@ -498,6 +571,7 @@
           <div class="client-info">📧 ${c.Email || 'Sin email'}</div>
           <div class="client-info">📱 ${c.Telefono || 'Sin teléfono'}</div>
           ${c.NIF ? `<div class="client-info">🏢 ${c.NIF}</div>` : ''}
+          ${c.Contrato_URL ? `<a href="${c.Contrato_URL}" target="_blank" class="contract-link" onclick="event.stopPropagation()">📄 Ver Contrato</a>` : ''}
         </div>
       `).join('');
         }
@@ -546,25 +620,42 @@
             const form = e.target;
             const btn = form.querySelector('[type="submit"]');
             const statusMsg = document.getElementById('statusMsg');
+
+            // Validación mínima: al menos uno de Nombre, Email o NIF
+            const nombre = form.nombre.value.trim();
+            const email = form.email.value.trim();
+            const nif = form.nif.value.trim();
+
+            if (!nombre && !email && !nif) {
+                statusMsg.textContent = '⚠️ Ingresa al menos Nombre, Email o NIF';
+                statusMsg.className = 'status-msg error';
+                return;
+            }
+
             btn.disabled = true;
             btn.textContent = '⏳ Guardando...';
 
-            const data = {
-                id: document.getElementById('clientId').value,
-                nombre: form.nombre.value,
-                nif: form.nif.value,
-                email: form.email.value,
-                telefono: form.telefono.value,
-                direccion: form.direccion.value,
-                estado: form.estado.value,
-                notas: form.notas.value
-            };
+            // Usar FormData para soportar archivos
+            const formData = new FormData();
+            formData.append('id', document.getElementById('clientId').value);
+            formData.append('nombre', nombre);
+            formData.append('nif', nif);
+            formData.append('email', email);
+            formData.append('telefono', form.telefono.value);
+            formData.append('direccion', form.direccion.value);
+            formData.append('estado', form.estado.value);
+            formData.append('notas', form.notas.value);
+
+            // Añadir contrato si existe
+            const contratoFile = document.getElementById('contratoFile').files[0];
+            if (contratoFile) {
+                formData.append('contrato', contratoFile);
+            }
 
             try {
                 const res = await fetch(WEBHOOK, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
+                    body: formData
                 });
                 if (res.ok) {
                     statusMsg.textContent = '✅ Cliente guardado correctamente';

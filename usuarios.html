@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👤 Usuarios - CRM Pracmatik</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+        }
+
+        .dark {
+            --bg-main: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.9);
+            --bg-glass: rgba(255, 255, 255, 0.05);
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: rgba(148, 163, 184, 0.2);
+        }
+
+        .light {
+            --bg-main: #f1f5f9;
+            --bg-card: rgba(255, 255, 255, 0.95);
+            --bg-glass: rgba(0, 0, 0, 0.03);
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-main);
+            min-height: 100vh;
+            color: var(--text);
+            transition: all 0.4s;
+        }
+
+        .bg-depth {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .bg-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.25;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .bg-orb.o1 {
+            width: 500px;
+            height: 500px;
+            background: var(--primary);
+            top: -150px;
+            right: -100px;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translate(0, 0);
+            }
+
+            50% {
+                transform: translate(-30px, 30px);
+            }
+        }
+
+        .light .bg-orb {
+            opacity: 0.1;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .nav a:hover {
+            background: var(--bg-glass);
+            color: var(--text);
+        }
+
+        .nav a.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 800;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            background: var(--primary);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+        }
+
+        .btn-danger:hover {
+            box-shadow: 0 5px 20px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: none;
+        }
+
+        .btn-logout {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+        }
+
+        /* Users Grid */
+        .users-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .user-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+
+        .user-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .user-card.admin {
+            border-color: var(--primary);
+        }
+
+        .user-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .user-name {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .user-email {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .user-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .user-badge.admin {
+            background: rgba(99, 102, 241, 0.2);
+            color: var(--primary);
+        }
+
+        .user-badge.usuario {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .user-actions button {
+            flex: 1;
+            padding: 8px;
+            font-size: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: var(--bg-glass);
+            color: var(--text);
+            transition: all 0.2s;
+        }
+
+        .user-actions button:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .user-actions button.delete:hover {
+            background: var(--danger);
+            border-color: var(--danger);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 450px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal h2 {
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            font-size: 14px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            outline: none;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--primary);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-actions .btn {
+            flex: 1;
+        }
+
+        .status-msg {
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            display: none;
+        }
+
+        .status-msg.success {
+            display: block;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+
+        .status-msg.error {
+            display: block;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+        }
+
+        /* Current User Info */
+        .current-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            background: var(--bg-glass);
+            border-radius: 10px;
+            font-size: 13px;
+        }
+
+        .current-user .name {
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body class="dark">
+    <div class="bg-depth">
+        <div class="bg-orb o1"></div>
+    </div>
+    <div class="container">
+        <nav class="nav">
+            <a href="crm.html">🏠 CRM</a>
+            <a href="clientes.html">👥 Clientes</a>
+            <a href="leads.html">🎯 Leads</a>
+            <a href="proyectos.html">📋 Proyectos</a>
+            <a href="comercial.html">📧 Comercial</a>
+            <a href="dashboard.html">📊 Contabilidad</a>
+            <a href="usuarios.html" class="active">👤 Usuarios</a>
+        </nav>
+
+        <header class="header">
+            <h1>👤 Gestión de Usuarios</h1>
+            <div class="header-actions">
+                <div class="current-user">
+                    <span>👤</span>
+                    <span class="name" id="currentUserName">-</span>
+                </div>
+                <button class="btn" onclick="openModal()">➕ Nuevo Usuario</button>
+                <button class="btn btn-logout" onclick="Auth.logout()">🚪 Salir</button>
+            </div>
+        </header>
+
+        <div class="users-grid" id="usersGrid">
+            <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                ⏳ Cargando usuarios...
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <h2 id="modalTitle">➕ Nuevo Usuario</h2>
+            <div id="statusMsg" class="status-msg"></div>
+            <form id="userForm" onsubmit="saveUser(event)">
+                <input type="hidden" id="editingEmail">
+                <div class="form-group">
+                    <label>Nombre *</label>
+                    <input type="text" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label>Contraseña *</label>
+                    <input type="password" name="password" minlength="4">
+                </div>
+                <div class="form-group">
+                    <label>Rol *</label>
+                    <select name="role" required>
+                        <option value="usuario">👤 Usuario</option>
+                        <option value="admin">⭐ Administrador</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn">💾 Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script>
+        document.body.className = localStorage.getItem('theme') || 'dark';
+
+        // Proteger página (solo admin)
+        if (!Auth.protect('usuarios')) {
+            // La función protect ya redirige
+        }
+
+        // Mostrar usuario actual
+        const currentUser = Auth.getCurrentUser();
+        if (currentUser) {
+            document.getElementById('currentUserName').textContent = currentUser.name;
+        }
+
+        function renderUsers() {
+            const users = Auth.getAllUsers();
+            const grid = document.getElementById('usersGrid');
+
+            if (!users.length) {
+                grid.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-muted);">No hay usuarios registrados</div>';
+                return;
+            }
+
+            grid.innerHTML = users.map(u => `
+                <div class="user-card ${u.role}">
+                    <div class="user-header">
+                        <div class="user-avatar">${u.name.charAt(0).toUpperCase()}</div>
+                        <span class="user-badge ${u.role}">${u.role === 'admin' ? '⭐ Admin' : '👤 Usuario'}</span>
+                    </div>
+                    <div class="user-name">${u.name}</div>
+                    <div class="user-email">${u.email}</div>
+                    <div class="user-actions">
+                        <button onclick='editUser(${JSON.stringify(u)})'>✏️ Editar</button>
+                        ${u.email !== 'admin@pracmatik.com' ? `<button class="delete" onclick="deleteUser('${u.email}')">🗑️</button>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openModal(user = null) {
+            document.getElementById('modal').classList.add('active');
+            document.getElementById('statusMsg').className = 'status-msg';
+            const form = document.getElementById('userForm');
+
+            if (user) {
+                document.getElementById('modalTitle').textContent = '✏️ Editar Usuario';
+                document.getElementById('editingEmail').value = user.email;
+                form.name.value = user.name;
+                form.email.value = user.email;
+                form.password.value = '';
+                form.password.required = false;
+                form.password.placeholder = 'Dejar vacío para mantener';
+                form.role.value = user.role;
+            } else {
+                document.getElementById('modalTitle').textContent = '➕ Nuevo Usuario';
+                document.getElementById('editingEmail').value = '';
+                form.reset();
+                form.password.required = true;
+                form.password.placeholder = '';
+            }
+        }
+
+        function editUser(user) {
+            openModal(user);
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+
+        function saveUser(e) {
+            e.preventDefault();
+            const form = e.target;
+            const statusMsg = document.getElementById('statusMsg');
+            const editingEmail = document.getElementById('editingEmail').value;
+
+            const userData = {
+                name: form.name.value.trim(),
+                email: form.email.value.trim(),
+                role: form.role.value
+            };
+
+            // Solo incluir password si se proporcionó uno nuevo
+            if (form.password.value) {
+                userData.password = form.password.value;
+            }
+
+            let result;
+            if (editingEmail) {
+                // Editando
+                result = Auth.updateUser(editingEmail, userData);
+            } else {
+                // Nuevo usuario - password requerido
+                if (!form.password.value) {
+                    statusMsg.textContent = '⚠️ La contraseña es requerida para nuevos usuarios';
+                    statusMsg.className = 'status-msg error';
+                    return;
+                }
+                result = Auth.addUser(userData);
+            }
+
+            if (result.success) {
+                statusMsg.textContent = '✅ Usuario guardado correctamente';
+                statusMsg.className = 'status-msg success';
+                setTimeout(() => {
+                    closeModal();
+                    renderUsers();
+                }, 1000);
+            } else {
+                statusMsg.textContent = '❌ ' + result.error;
+                statusMsg.className = 'status-msg error';
+            }
+        }
+
+        function deleteUser(email) {
+            if (!confirm(`¿Eliminar usuario ${email}?`)) return;
+
+            const result = Auth.deleteUser(email);
+            if (result.success) {
+                renderUsers();
+            } else {
+                alert('❌ ' + result.error);
+            }
+        }
+
+        // Inicializar
+        renderUsers();
+    </script>
+</body>
+
+</html>
